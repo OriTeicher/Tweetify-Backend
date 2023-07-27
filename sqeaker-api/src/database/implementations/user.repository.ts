@@ -3,6 +3,7 @@ import { IRepository } from '../interfaces/repsoitory.interface';
 import { Firestore, doc, setDoc } from '@firebase/firestore';
 import { USERS_COLLECTION, USERS_UUID_PREFIX } from '../constants';
 import { uuid } from 'uuidv4';
+import { InternalServerErrorException } from '@nestjs/common';
 
 export class UserRepositry implements IRepository<User> {
   constructor(private readonly db: Firestore) {}
@@ -12,7 +13,7 @@ export class UserRepositry implements IRepository<User> {
       const userUuid = USERS_UUID_PREFIX + uuid();
       await setDoc(doc(this.db, userUuid, USERS_COLLECTION), entity);
     } catch (error) {
-      throw error;
+      throw new InternalServerErrorException(error);
     }
   }
 
