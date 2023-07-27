@@ -1,19 +1,28 @@
-import { User } from 'src/users/entities/user.entity';
 import { IRepository } from '../interfaces/repsoitory.interface';
 import { Firestore, doc, setDoc } from '@firebase/firestore';
 import { USERS_COLLECTION, USERS_UUID_PREFIX } from '../constants';
-import { uuid } from 'uuidv4';
-import { InternalServerErrorException } from '@nestjs/common';
+import { v4 as uuidv4 } from 'uuid';
+import { Inject, InternalServerErrorException } from '@nestjs/common';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
 
-export class UserRepositry implements IRepository<User> {
-  constructor(private readonly db: Firestore) {}
+export class UserRepositry implements IRepository<CreateUserDto> {
+  constructor(
+    @Inject(Firestore)
+    private readonly db: Firestore,
+  ) {}
 
-  async create(entity: User) {
+  async create(entity: CreateUserDto) {
     try {
-      const userUuid = USERS_UUID_PREFIX + uuid();
-      await setDoc(doc(this.db, userUuid, USERS_COLLECTION), entity);
+      const userUuid = USERS_UUID_PREFIX + uuidv4();
+
+      console.log({ id: userUuid, ...entity });
+
+      await setDoc(doc(this.db, USERS_COLLECTION, userUuid), {
+        id: userUuid,
+        ...entity,
+      });
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException();
     }
   }
 
@@ -25,7 +34,7 @@ export class UserRepositry implements IRepository<User> {
     throw new Error('Method not implemented.');
   }
 
-  update(id: string, entity: User) {
+  update(id: string, entity: CreateUserDto) {
     throw new Error('Method not implemented.');
   }
 

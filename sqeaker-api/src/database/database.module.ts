@@ -1,11 +1,11 @@
 import { Logger, Module } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Firestore, getFirestore } from '@firebase/firestore';
 import { initializeApp } from '@firebase/app';
 import { UserRepositry } from './implementations/user.repository';
 
 function getConfigObject(configService: ConfigService) {
-  return {
+  const firebaseConfig = {
     apiKey: configService.get('FIREBASE_API_KEY'),
     authDomain: configService.get('FIREBASE_AUTH_DOMAIN'),
     projectId: configService.get('FIREBASE_PROJECT_ID'),
@@ -14,6 +14,8 @@ function getConfigObject(configService: ConfigService) {
     appId: configService.get('FIREBASE_APP_ID'),
     measurementId: configService.get('FIREBASE_MEASURMENT_ID'),
   };
+
+  return firebaseConfig;
 }
 
 @Module({
@@ -27,8 +29,9 @@ function getConfigObject(configService: ConfigService) {
       },
       inject: [ConfigService],
     },
+    UserRepositry,
   ],
-  imports: [UserRepositry],
+  imports: [ConfigModule],
   exports: [UserRepositry],
 })
 export class DatabaseModule {}
