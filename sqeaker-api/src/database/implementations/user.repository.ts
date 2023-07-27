@@ -4,6 +4,8 @@ import {
   Firestore,
   collection,
   doc,
+  getDoc,
+  getDocFromServer,
   getDocs,
   query,
   setDoc,
@@ -15,9 +17,11 @@ import {
   ConflictException,
   Inject,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { User } from 'src/users/entities/user.entity';
+import { NotFoundError } from 'rxjs';
 
 export class UserRepositry implements IRepository<CreateUserDto> {
   constructor(
@@ -52,6 +56,16 @@ export class UserRepositry implements IRepository<CreateUserDto> {
       );
   }
 
+  private getUserFromDoc(doc: DocumentData): User {
+    return {
+      id: doc.get('id'),
+      username: doc.get('username'),
+      email: doc.get('email'),
+      displayName: doc.get('displayName'),
+      password: null,
+    };
+  }
+
   async create(entity: CreateUserDto) {
     await this.validateUniqueConstraints(entity);
     try {
@@ -70,20 +84,17 @@ export class UserRepositry implements IRepository<CreateUserDto> {
     const users: User[] = [];
 
     docs.forEach((doc: DocumentData) => {
-      users.push({
-        id: doc.get('id'),
-        username: doc.get('username'),
-        email: doc.get('email'),
-        displayName: doc.get('displayName'),
-        password: null,
-      });
+      users.push(this.getUserFromDoc(doc));
     });
 
     return users;
   }
 
-  findOne(id: string) {
-    throw new Error('Method not implemented.');
+  async findOne(id: string): Promise<User> {
+    const userDoc = await getDoc(doc(this.db, USERS_COLLECTION, id));
+    if (!userDoc.exists())
+      throw new NotFoundException(`User with id: ${id} does not exist`);
+    return this.getUserFromDoc(userDoc);
   }
 
   update(id: string, entity: CreateUserDto) {
