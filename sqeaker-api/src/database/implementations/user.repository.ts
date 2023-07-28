@@ -1,32 +1,21 @@
-import { IRepository } from '../interfaces/repsoitory.interface';
+import { BaseRepository } from '../base-repsoitory.repository';
 import {
-  DocumentData,
   Firestore,
   collection,
-  deleteDoc,
-  doc,
-  getDoc,
   getDocs,
   query,
-  setDoc,
-  updateDoc,
   where,
 } from '@firebase/firestore';
 import { USERS_COLLECTION, USERS_UUID_PREFIX } from '../constants';
 import { v4 as uuidv4 } from 'uuid';
-import {
-  ConflictException,
-  Inject,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { UserEntity } from 'src/users/entities/user.entity';
 
-export class UserRepositry implements IRepository<UserEntity> {
-  constructor(
-    @Inject(Firestore)
-    private readonly db: Firestore,
-  ) {}
+@Injectable()
+export class UserRepositry extends BaseRepository<UserEntity> {
+  constructor(db: Firestore) {
+    super(db, UserEntity);
+  }
 
   private async isUnique(
     field: string,
@@ -55,56 +44,28 @@ export class UserRepositry implements IRepository<UserEntity> {
       );
   }
 
-  private getUserFromDoc(doc: DocumentData): UserEntity {
-    return {
-      id: doc.get('id'),
-      username: doc.get('username'),
-      email: doc.get('email'),
-      displayName: doc.get('displayName'),
-      password: null,
-    };
-  }
-
-  async create(entity: UserEntity) {
+  async createUser(entity: UserEntity): Promise<UserEntity> {
+    Object.assign(entity, { id: USERS_UUID_PREFIX + uuidv4() });
     await this.validateUniqueConstraints(entity);
-    try {
-      const userUuid = USERS_UUID_PREFIX + uuidv4();
-      await setDoc(doc(this.db, USERS_COLLECTION, userUuid), {
-        id: userUuid,
-        ...entity,
-      });
-    } catch (error) {
-      throw new InternalServerErrorException();
-    }
+    return super.create(USERS_COLLECTION, entity);
   }
 
-  async findAll(): Promise<UserEntity[]> {
-    const docs = await getDocs(query(collection(this.db, USERS_COLLECTION)));
-    const users: UserEntity[] = [];
-
-    docs.forEach((doc: DocumentData) => {
-      users.push(this.getUserFromDoc(doc));
-    });
-
-    return users;
+  async findAllUsers(): Promise<UserEntity[]> {
+    return super.findAll(USERS_COLLECTION);
   }
 
-  async findOne(id: string): Promise<UserEntity> {
-    const userDoc = await getDoc(doc(this.db, USERS_COLLECTION, id));
-    if (!userDoc.exists())
-      throw new NotFoundException(`User with id: ${id} does not exist`);
-    return this.getUserFromDoc(userDoc);
+  async findOneUser(id: string): Promise<UserEntity> {
+    return await super.findOne(USERS_COLLECTION, id);
   }
 
-  async update(id: string, entity: Partial<UserEntity>): Promise<UserEntity> {
-    const user = await this.findOne(id);
-    await updateDoc(doc(this.db, USERS_COLLECTION, id), { ...entity });
-    Object.assign(user, entity);
-    return user;
+  async updateUser(
+    id: string,
+    entity: Partial<UserEntity>,
+  ): Promise<UserEntity> {
+    return await super.update(USERS_COLLECTION, id, entity);
   }
 
-  async remove(id: string) {
-    await this.findOne(id);
-    await deleteDoc(doc(this.db, USERS_COLLECTION, id));
+  async removeUser(id: string) {
+    await super.remove(USERS_COLLECTION, id);
   }
 }

@@ -9,22 +9,24 @@ export class UsersService {
   constructor(private readonly usersRepository: UserRepositry) {}
 
   create(createUserDto: CreateUserDto) {
-    return this.usersRepository.create({ ...createUserDto } as UserEntity);
+    return this.usersRepository.createUser({ ...createUserDto } as UserEntity);
   }
 
   findAll() {
-    return this.usersRepository.findAll();
+    return this.usersRepository.findAllUsers();
   }
 
   findOne(id: string) {
-    return this.usersRepository.findOne(id);
+    return this.usersRepository.findOneUser(id);
   }
 
   update(id: string, updateUserDto: UpdateUserDto) {
-    return this.usersRepository.update(id, { ...updateUserDto } as UserEntity);
+    return this.usersRepository.updateUser(id, {
+      ...updateUserDto,
+    } as UserEntity);
   }
 
   remove(id: string) {
-    return this.usersRepository.remove(id);
+    return this.usersRepository.removeUser(id);
   }
 }

@@ -13,7 +13,7 @@ export class PostsService {
   ) {}
 
   async create(createPostDto: CreatePostDto) {
-    const user = await this.userRepsitory.findOne(createPostDto.userId);
+    const user = await this.userRepsitory.findOneUser(createPostDto.userId);
     const post: PostEntity = {
       id: undefined,
       owner: user,
@@ -25,7 +25,7 @@ export class PostsService {
       comments: [],
     };
 
-    return await this.postRepository.create(post);
+    return await this.postRepository.createPost(post);
   }
 
   findAll() {
