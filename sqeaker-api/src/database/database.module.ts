@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Firestore, getFirestore } from '@firebase/firestore';
 import { initializeApp } from '@firebase/app';
 import { UserRepositry } from './implementations/user.repository';
+import { PostRepsitory } from './implementations/posts.repository';
 
 function getConfigObject(configService: ConfigService) {
   const firebaseConfig = {
@@ -30,8 +31,9 @@ function getConfigObject(configService: ConfigService) {
       inject: [ConfigService],
     },
     UserRepositry,
+    PostRepsitory,
   ],
   imports: [ConfigModule],
-  exports: [UserRepositry],
+  exports: [UserRepositry, PostRepsitory],
 })
 export class DatabaseModule {}

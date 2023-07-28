@@ -20,11 +20,9 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { User } from 'src/users/entities/user.entity';
-import { UpdateUserDto } from 'src/users/dto/update-user.dto';
 
-export class UserRepositry implements IRepository<CreateUserDto> {
+export class UserRepositry implements IRepository<User> {
   constructor(
     @Inject(Firestore)
     private readonly db: Firestore,
@@ -42,7 +40,7 @@ export class UserRepositry implements IRepository<CreateUserDto> {
     return (await getDocs(isUniqueQuery)).empty;
   }
 
-  private async validateUniqueConstraints(entity: CreateUserDto) {
+  private async validateUniqueConstraints(entity: User) {
     const isEmailUnique = await this.isUnique(entity.email, 'email');
     const isUsernameUnique = await this.isUnique(entity.username, 'username');
 
@@ -67,7 +65,7 @@ export class UserRepositry implements IRepository<CreateUserDto> {
     };
   }
 
-  async create(entity: CreateUserDto) {
+  async create(entity: User) {
     await this.validateUniqueConstraints(entity);
     try {
       const userUuid = USERS_UUID_PREFIX + uuidv4();
@@ -98,7 +96,7 @@ export class UserRepositry implements IRepository<CreateUserDto> {
     return this.getUserFromDoc(userDoc);
   }
 
-  async update(id: string, entity: UpdateUserDto): Promise<User> {
+  async update(id: string, entity: Partial<User>): Promise<User> {
     const user = await this.findOne(id);
     await updateDoc(doc(this.db, USERS_COLLECTION, id), { ...entity });
     Object.assign(user, entity);
