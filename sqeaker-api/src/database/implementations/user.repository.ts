@@ -3,12 +3,13 @@ import {
   DocumentData,
   Firestore,
   collection,
+  deleteDoc,
   doc,
   getDoc,
-  getDocFromServer,
   getDocs,
   query,
   setDoc,
+  updateDoc,
   where,
 } from '@firebase/firestore';
 import { USERS_COLLECTION, USERS_UUID_PREFIX } from '../constants';
@@ -21,7 +22,7 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { User } from 'src/users/entities/user.entity';
-import { NotFoundError } from 'rxjs';
+import { UpdateUserDto } from 'src/users/dto/update-user.dto';
 
 export class UserRepositry implements IRepository<CreateUserDto> {
   constructor(
@@ -97,11 +98,15 @@ export class UserRepositry implements IRepository<CreateUserDto> {
     return this.getUserFromDoc(userDoc);
   }
 
-  update(id: string, entity: CreateUserDto) {
-    throw new Error('Method not implemented.');
+  async update(id: string, entity: UpdateUserDto): Promise<User> {
+    const user = await this.findOne(id);
+    await updateDoc(doc(this.db, USERS_COLLECTION, id), { ...entity });
+    Object.assign(user, entity);
+    return user;
   }
 
-  delete(id: string) {
-    throw new Error('Method not implemented.');
+  async remove(id: string) {
+    await this.findOne(id);
+    await deleteDoc(doc(this.db, USERS_COLLECTION, id));
   }
 }

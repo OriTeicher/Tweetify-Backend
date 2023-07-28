@@ -18,8 +18,8 @@ async function bootstrap() {
       },
     }),
   );
-  app.setGlobalPrefix(GLOBAL_PREFIX);
 
+  app.setGlobalPrefix(GLOBAL_PREFIX);
   await app.listen(configService.get<number>('PORT'));
 }
 bootstrap();
