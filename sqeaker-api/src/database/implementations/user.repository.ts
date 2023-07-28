@@ -20,9 +20,9 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { User } from 'src/users/entities/user.entity';
+import { UserEntity } from 'src/users/entities/user.entity';
 
-export class UserRepositry implements IRepository<User> {
+export class UserRepositry implements IRepository<UserEntity> {
   constructor(
     @Inject(Firestore)
     private readonly db: Firestore,
@@ -40,7 +40,7 @@ export class UserRepositry implements IRepository<User> {
     return (await getDocs(isUniqueQuery)).empty;
   }
 
-  private async validateUniqueConstraints(entity: User) {
+  private async validateUniqueConstraints(entity: UserEntity) {
     const isEmailUnique = await this.isUnique(entity.email, 'email');
     const isUsernameUnique = await this.isUnique(entity.username, 'username');
 
@@ -55,7 +55,7 @@ export class UserRepositry implements IRepository<User> {
       );
   }
 
-  private getUserFromDoc(doc: DocumentData): User {
+  private getUserFromDoc(doc: DocumentData): UserEntity {
     return {
       id: doc.get('id'),
       username: doc.get('username'),
@@ -65,7 +65,7 @@ export class UserRepositry implements IRepository<User> {
     };
   }
 
-  async create(entity: User) {
+  async create(entity: UserEntity) {
     await this.validateUniqueConstraints(entity);
     try {
       const userUuid = USERS_UUID_PREFIX + uuidv4();
@@ -78,9 +78,9 @@ export class UserRepositry implements IRepository<User> {
     }
   }
 
-  async findAll(): Promise<User[]> {
+  async findAll(): Promise<UserEntity[]> {
     const docs = await getDocs(query(collection(this.db, USERS_COLLECTION)));
-    const users: User[] = [];
+    const users: UserEntity[] = [];
 
     docs.forEach((doc: DocumentData) => {
       users.push(this.getUserFromDoc(doc));
@@ -89,14 +89,14 @@ export class UserRepositry implements IRepository<User> {
     return users;
   }
 
-  async findOne(id: string): Promise<User> {
+  async findOne(id: string): Promise<UserEntity> {
     const userDoc = await getDoc(doc(this.db, USERS_COLLECTION, id));
     if (!userDoc.exists())
       throw new NotFoundException(`User with id: ${id} does not exist`);
     return this.getUserFromDoc(userDoc);
   }
 
-  async update(id: string, entity: Partial<User>): Promise<User> {
+  async update(id: string, entity: Partial<UserEntity>): Promise<UserEntity> {
     const user = await this.findOne(id);
     await updateDoc(doc(this.db, USERS_COLLECTION, id), { ...entity });
     Object.assign(user, entity);

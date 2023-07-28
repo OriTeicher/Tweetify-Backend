@@ -1,7 +1,7 @@
 import { Exclude, Expose } from 'class-transformer';
 
 @Expose()
-export class User {
+export class UserEntity {
   readonly id: string;
 
   readonly email: string;

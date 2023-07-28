@@ -28,7 +28,16 @@ export class PostRepsitory implements IRepository<PostEntity> {
   ) {}
 
   private getPostFromDoc(doc: DocumentData): PostEntity {
-    return null;
+    return {
+      id: doc.get('id'),
+      owner: doc.get('owner'),
+      imgUrl: doc.get('imgUrl'),
+      createdAt: doc.get('createdAt'),
+      likes: doc.get('likes'),
+      resqueaks: doc.get('resqueaks'),
+      content: doc.get('content'),
+      comments: doc.get('comments'),
+    };
   }
 
   async create(entity: PostEntity): Promise<PostEntity> {

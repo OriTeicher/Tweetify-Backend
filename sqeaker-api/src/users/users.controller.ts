@@ -12,9 +12,9 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { SerializeInterceptor } from 'src/common/serialize/serialize.interceptor';
-import { User } from './entities/user.entity';
+import { UserEntity } from './entities/user.entity';
 
-@UseInterceptors(new SerializeInterceptor(User))
+@UseInterceptors(new SerializeInterceptor(UserEntity))
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
