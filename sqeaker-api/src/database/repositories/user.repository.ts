@@ -1,4 +1,4 @@
-import { BaseRepository } from '../base-repsoitory.repository';
+import { BaseRepository } from './base-repsoitory.repository';
 import {
   Firestore,
   collection,

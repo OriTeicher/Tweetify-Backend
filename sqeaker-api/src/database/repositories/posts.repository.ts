@@ -1,4 +1,4 @@
-import { BaseRepository } from '../base-repsoitory.repository';
+import { BaseRepository } from './base-repsoitory.repository';
 import { Firestore } from '@firebase/firestore';
 import { POSTS_COLLECTION, POSTS_UUID_PREFIX } from '../constants';
 import { v4 as uuidv4 } from 'uuid';

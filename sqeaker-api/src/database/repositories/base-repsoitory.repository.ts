@@ -55,9 +55,7 @@ export class BaseRepository<E extends EntityBase> {
     const entityDoc = await getDoc(doc(this.db, collectionPath, id));
     if (!entityDoc.exists())
       throw new NotFoundException(
-        `${
-          plainToInstance(this.entityCtor, {}).constructor.name
-        } with id: ${id} does not exist`,
+        `${this.entityCtor.name} with id: ${id} does not exist`,
       );
     return plainToInstance(this.entityCtor, entityDoc.data());
   }

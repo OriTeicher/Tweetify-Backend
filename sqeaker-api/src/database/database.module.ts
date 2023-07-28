@@ -2,8 +2,8 @@ import { Logger, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Firestore, getFirestore } from '@firebase/firestore';
 import { initializeApp } from '@firebase/app';
-import { UserRepositry } from './implementations/user.repository';
-import { PostRepsitory } from './implementations/posts.repository';
+import { UserRepositry } from './repositories/user.repository';
+import { PostRepsitory } from './repositories/posts.repository';
 
 function getConfigObject(configService: ConfigService) {
   const firebaseConfig = {

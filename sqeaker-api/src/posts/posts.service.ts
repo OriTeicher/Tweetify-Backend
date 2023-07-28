@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { PostRepsitory } from 'src/database/implementations/posts.repository';
-import { UserRepositry } from 'src/database/implementations/user.repository';
+import { PostRepsitory } from 'src/database/repositories/posts.repository';
+import { UserRepositry } from 'src/database/repositories/user.repository';
 import { PostEntity } from './entities/post.entity';
 
 @Injectable()
