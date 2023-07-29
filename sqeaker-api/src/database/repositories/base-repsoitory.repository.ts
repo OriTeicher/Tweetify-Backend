@@ -38,22 +38,21 @@ export class BaseRepository<E extends EntityBase> {
     protected readonly entityCtor: ClassConstructor<E>,
   ) {}
 
-  private collectMetadata() {
+  private collectMetadata(entity: E) {
     const metadataKeys = [SET_CREATED_AT, SET_UUID];
-    const values = metadataKeys.reduce((prev, key) => {
-      const metadataValue = Reflect.getMetadata(
-        key,
-        new this.entityCtor(),
-        key.description,
-      );
-      console.log(key, metadataValue, key.description);
-      if (metadataValue !== undefined) {
-        prev[key.description] = metadataValue;
-      }
+    const temp = new this.entityCtor();
+
+    console.log(Object.getOwnPropertyNames(entity));
+
+    return metadataKeys.reduce((prev, key) => {
+      Object.getOwnPropertyNames(entity).forEach((propertyName) => {
+        const metadataValue = Reflect.getMetadata(key, temp, propertyName);
+        if (metadataValue !== undefined) {
+          prev[propertyName] = metadataValue;
+        }
+      });
       return prev;
     }, {});
-
-    return values;
   }
 
   protected async create(entity: E): Promise<E>;
@@ -61,8 +60,8 @@ export class BaseRepository<E extends EntityBase> {
 
   protected async create(entity: E, collectionPath?: string): Promise<E> {
     try {
-      Object.assign(entity, this.collectMetadata());
-
+      Object.assign(entity, this.collectMetadata(entity));
+      console.log(entity);
       await setDoc(doc(this.db, collectionPath, entity.id), {
         ...entity,
       });

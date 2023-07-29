@@ -18,6 +18,17 @@ export class UserRepositry extends BaseRepository<UserEntity> {
     super(db, UserEntity);
   }
 
+  private getEmptyUser(): UserEntity {
+    return {
+      id: null,
+      email: null,
+      password: null,
+      username: null,
+      displayName: null,
+      createdAt: null,
+    };
+  }
+
   private async isUnique(
     field: string,
     fieldToMatch: string,
@@ -46,8 +57,9 @@ export class UserRepositry extends BaseRepository<UserEntity> {
   }
 
   async create(entity: UserEntity): Promise<UserEntity> {
-    await this.validateUniqueConstraints(entity);
-    return super.create(entity, USERS_COLLECTION);
+    const newEntity = Object.assign(this.getEmptyUser(), entity);
+    await this.validateUniqueConstraints(newEntity);
+    return super.create(newEntity, USERS_COLLECTION);
   }
 
   async findAll(paginationQueryDto: PaginationQueryDto): Promise<UserEntity[]> {
