@@ -12,9 +12,11 @@ export class PostsService {
     private readonly userRepsitory: UserRepositry,
   ) {}
 
-  async create(createPostDto: CreatePostDto) {
+  private async createEmptyPost(
+    createPostDto: CreatePostDto,
+  ): Promise<PostEntity> {
     const user = await this.userRepsitory.findOneUser(createPostDto.userId);
-    const post: PostEntity = {
+    return {
       id: undefined,
       owner: user,
       imgUrl: createPostDto?.imgUrl || null,
@@ -24,6 +26,10 @@ export class PostsService {
       content: createPostDto?.content || null,
       comments: [],
     };
+  }
+
+  async create(createPostDto: CreatePostDto) {
+    const post = await this.createEmptyPost(createPostDto);
 
     return await this.postRepository.createPost(post);
   }

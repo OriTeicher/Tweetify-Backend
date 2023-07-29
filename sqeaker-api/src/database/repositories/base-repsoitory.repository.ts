@@ -42,13 +42,7 @@ export class BaseRepository<E extends EntityBase> {
 
   protected async findAll(collectionPath: string): Promise<E[]> {
     const docs = await getDocs(query(collection(this.db, collectionPath)));
-    const entities: E[] = [];
-
-    docs.forEach((doc) => {
-      entities.push(plainToInstance(this.entityCtor, doc.data()));
-    });
-
-    return entities;
+    return docs.docs.map((doc) => plainToInstance(this.entityCtor, doc.data()));
   }
 
   protected async findOne(collectionPath: string, id: string): Promise<E> {
@@ -65,14 +59,28 @@ export class BaseRepository<E extends EntityBase> {
     id: string,
     entity: Partial<E>,
   ): Promise<E> {
-    const dbEntity = await this.findOne(collectionPath, id);
-    await updateDoc(doc(this.db, collectionPath, id), instanceToPlain(entity));
-    Object.assign(dbEntity, entity);
-    return dbEntity;
+    try {
+      const dbEntity = await this.findOne(collectionPath, id);
+      await updateDoc(
+        doc(this.db, collectionPath, id),
+        instanceToPlain(entity),
+      );
+      Object.assign(dbEntity, entity);
+      return dbEntity;
+    } catch (error) {
+      throw new NotFoundException(
+        `${this.entityCtor.name} with id: ${id} does not exist`,
+      );
+    }
   }
 
   protected async remove(collectionPath: string, id: string): Promise<void> {
-    await this.findOne(collectionPath, id);
-    await deleteDoc(doc(this.db, collectionPath, id));
+    try {
+      await this.findOne(collectionPath, id);
+      await deleteDoc(doc(this.db, collectionPath, id));
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException();
+    }
   }
 }
