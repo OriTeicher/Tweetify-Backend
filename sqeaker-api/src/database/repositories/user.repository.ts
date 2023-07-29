@@ -10,6 +10,7 @@ import { USERS_COLLECTION, USERS_UUID_PREFIX } from '../constants';
 import { v4 as uuidv4 } from 'uuid';
 import { ConflictException, Injectable } from '@nestjs/common';
 import { UserEntity } from 'src/users/entities/user.entity';
+import { PaginationQueryDto } from 'src/comments/dto/pagination-query.dto';
 
 @Injectable()
 export class UserRepositry extends BaseRepository<UserEntity> {
@@ -45,13 +46,12 @@ export class UserRepositry extends BaseRepository<UserEntity> {
   }
 
   async create(entity: UserEntity): Promise<UserEntity> {
-    Object.assign(entity, { id: USERS_UUID_PREFIX + uuidv4() });
     await this.validateUniqueConstraints(entity);
     return super.create(entity, USERS_COLLECTION);
   }
 
-  async findAll(): Promise<UserEntity[]> {
-    return await super.findAll(USERS_COLLECTION);
+  async findAll(paginationQueryDto: PaginationQueryDto): Promise<UserEntity[]> {
+    return await super.findAll(paginationQueryDto, USERS_COLLECTION);
   }
 
   async findOne(id: string): Promise<UserEntity> {

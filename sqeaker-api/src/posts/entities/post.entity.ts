@@ -1,8 +1,11 @@
 import { Type } from 'class-transformer';
-import { Comment } from 'src/comments/entities/comment.entity';
+import { CommentEntity } from 'src/comments/entities/comment.entity';
+import { SetUUID } from 'src/common/deserialize/decorators/setCreatedAt.decorator';
+import { POSTS_UUID_PREFIX } from 'src/database/constants';
 import { UserEntity } from 'src/users/entities/user.entity';
 
 export class PostEntity {
+  @SetUUID(POSTS_UUID_PREFIX)
   readonly id: string;
 
   @Type(() => UserEntity)
@@ -18,5 +21,5 @@ export class PostEntity {
 
   readonly content?: string;
 
-  readonly comments: Comment[];
+  readonly comments: CommentEntity[];
 }

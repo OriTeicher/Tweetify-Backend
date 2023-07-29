@@ -7,12 +7,14 @@ import {
   Param,
   Delete,
   UseInterceptors,
+  Query,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { SerializeInterceptor } from 'src/common/serialize/serialize.interceptor';
 import { PostEntity } from './entities/post.entity';
+import { PaginationQueryDto } from 'src/comments/dto/pagination-query.dto';
 
 @UseInterceptors(new SerializeInterceptor(PostEntity))
 @Controller('posts')
@@ -25,8 +27,8 @@ export class PostsController {
   }
 
   @Get()
-  findAll() {
-    return this.postsService.findAll();
+  findAll(@Query() paginationQueryDto: PaginationQueryDto) {
+    return this.postsService.findAll(paginationQueryDto);
   }
 
   @Get(':id')

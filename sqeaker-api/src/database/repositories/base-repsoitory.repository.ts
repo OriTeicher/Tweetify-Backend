@@ -5,8 +5,11 @@ import {
   doc,
   getDoc,
   getDocs,
+  limit,
+  orderBy,
   query,
   setDoc,
+  startAt,
   updateDoc,
 } from '@firebase/firestore';
 import {
@@ -18,6 +21,12 @@ import {
   instanceToPlain,
   plainToInstance,
 } from 'class-transformer';
+import { PaginationQueryDto } from 'src/comments/dto/pagination-query.dto';
+import { ORDER_BY } from '../constants';
+import {
+  SET_CREATED_AT,
+  SET_UUID,
+} from 'src/common/deserialize/decorators/setCreatedAt.decorator';
 
 class EntityBase {
   id: string;
@@ -26,14 +35,34 @@ class EntityBase {
 export class BaseRepository<E extends EntityBase> {
   constructor(
     protected readonly db: Firestore,
-    private readonly entityCtor: ClassConstructor<E>,
+    protected readonly entityCtor: ClassConstructor<E>,
   ) {}
+
+  private collectMetadata() {
+    const metadataKeys = [SET_CREATED_AT, SET_UUID];
+    const values = metadataKeys.reduce((prev, key) => {
+      const metadataValue = Reflect.getMetadata(
+        key,
+        new this.entityCtor(),
+        key.description,
+      );
+      console.log(key, metadataValue, key.description);
+      if (metadataValue !== undefined) {
+        prev[key.description] = metadataValue;
+      }
+      return prev;
+    }, {});
+
+    return values;
+  }
 
   protected async create(entity: E): Promise<E>;
   protected async create(entity: E, collectionPath?: string): Promise<E>;
 
   protected async create(entity: E, collectionPath?: string): Promise<E> {
     try {
+      Object.assign(entity, this.collectMetadata());
+
       await setDoc(doc(this.db, collectionPath, entity.id), {
         ...entity,
       });
@@ -43,11 +72,30 @@ export class BaseRepository<E extends EntityBase> {
     }
   }
 
-  protected async findAll(): Promise<E[]>;
-  protected async findAll(collectionPath?: string): Promise<E[]>;
+  protected async findAll(paginationQueryDto: PaginationQueryDto): Promise<E[]>;
+  protected async findAll(
+    paginationQueryDto: PaginationQueryDto,
+    collectionPath?: string,
+  ): Promise<E[]>;
 
-  protected async findAll(collectionPath?: string): Promise<E[]> {
-    const docs = await getDocs(query(collection(this.db, collectionPath)));
+  protected async findAll(
+    paginationQueryDto: PaginationQueryDto,
+    collectionPath?: string,
+  ): Promise<E[]> {
+    let docs;
+
+    if (Object.entries(paginationQueryDto).length !== 0) {
+      docs = await getDocs(
+        query(
+          collection(this.db, collectionPath),
+          limit(paginationQueryDto?.limit),
+          orderBy(ORDER_BY),
+          startAt(paginationQueryDto?.offset),
+        ),
+      );
+    } else {
+      docs = await getDocs(query(collection(this.db, collectionPath)));
+    }
     return docs.docs.map((doc) => plainToInstance(this.entityCtor, doc.data()));
   }
 

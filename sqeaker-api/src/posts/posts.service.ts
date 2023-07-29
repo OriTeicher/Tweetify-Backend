@@ -4,6 +4,7 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { PostRepsitory } from 'src/database/repositories/posts.repository';
 import { UserRepositry } from 'src/database/repositories/user.repository';
 import { PostEntity } from './entities/post.entity';
+import { PaginationQueryDto } from 'src/comments/dto/pagination-query.dto';
 
 @Injectable()
 export class PostsService {
@@ -30,23 +31,24 @@ export class PostsService {
 
   async create(createPostDto: CreatePostDto) {
     const post = await this.createEmptyPost(createPostDto);
-
     return await this.postRepository.create(post);
   }
 
-  findAll() {
-    return `This action returns all posts`;
+  async findAll(paginationQueryDto: PaginationQueryDto) {
+    return await this.postRepository.findAll(paginationQueryDto);
   }
 
-  findOne(id: string) {
-    return `This action returns a #${id} post`;
+  async findOne(id: string) {
+    return await this.postRepository.findOne(id);
   }
 
-  update(id: string, updatePostDto: UpdatePostDto) {
-    return `This action updates a #${id} post`;
+  async update(id: string, updatePostDto: UpdatePostDto) {
+    const post = await this.findOne(id);
+    Object.assign(post, updatePostDto);
+    return await this.postRepository.update(id, post);
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} post`;
+  async remove(id: string) {
+    await this.postRepository.remove(id);
   }
 }

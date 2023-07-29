@@ -3,6 +3,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserRepositry } from 'src/database/repositories/user.repository';
 import { UserEntity } from './entities/user.entity';
+import { PaginationQueryDto } from 'src/comments/dto/pagination-query.dto';
 
 @Injectable()
 export class UsersService {
@@ -12,8 +13,8 @@ export class UsersService {
     return this.usersRepository.create({ ...createUserDto } as UserEntity);
   }
 
-  findAll() {
-    return this.usersRepository.findAll();
+  findAll(paginationQueryDto: PaginationQueryDto) {
+    return this.usersRepository.findAll(paginationQueryDto);
   }
 
   findOne(id: string) {

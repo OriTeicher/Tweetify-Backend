@@ -1,4 +1,4 @@
-export class Comment {
+export class CommentEntity {
   readonly id: string;
 
   readonly ownerId: string;
