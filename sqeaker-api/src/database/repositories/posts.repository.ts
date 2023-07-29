@@ -11,27 +11,24 @@ export class PostRepsitory extends BaseRepository<PostEntity> {
     super(db, PostEntity);
   }
 
-  async createPost(entity: PostEntity): Promise<PostEntity> {
+  async create(entity: PostEntity): Promise<PostEntity> {
     Object.assign(entity, { id: POSTS_UUID_PREFIX + uuidv4() });
-    return super.create(POSTS_COLLECTION, entity);
+    return super.create(entity, POSTS_COLLECTION);
   }
 
-  async findAllPosts(): Promise<PostEntity[]> {
+  async findAll(): Promise<PostEntity[]> {
     return super.findAll(POSTS_COLLECTION);
   }
 
-  async findOnePost(id: string): Promise<PostEntity> {
-    return await super.findOne(POSTS_COLLECTION, id);
+  async findOne(id: string): Promise<PostEntity> {
+    return await super.findOne(id, POSTS_COLLECTION);
   }
 
-  async updatePost(
-    id: string,
-    entity: Partial<PostEntity>,
-  ): Promise<PostEntity> {
-    return await super.update(POSTS_COLLECTION, id, entity);
+  async update(id: string, entity: Partial<PostEntity>): Promise<PostEntity> {
+    return await super.update(id, entity, POSTS_COLLECTION);
   }
 
-  async removePost(id: string) {
-    await super.remove(POSTS_COLLECTION, id);
+  async remove(id: string) {
+    await super.remove(id, POSTS_COLLECTION);
   }
 }

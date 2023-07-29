@@ -44,28 +44,25 @@ export class UserRepositry extends BaseRepository<UserEntity> {
       );
   }
 
-  async createUser(entity: UserEntity): Promise<UserEntity> {
+  async create(entity: UserEntity): Promise<UserEntity> {
     Object.assign(entity, { id: USERS_UUID_PREFIX + uuidv4() });
     await this.validateUniqueConstraints(entity);
-    return super.create(USERS_COLLECTION, entity);
+    return super.create(entity, USERS_COLLECTION);
   }
 
-  async findAllUsers(): Promise<UserEntity[]> {
-    return super.findAll(USERS_COLLECTION);
+  async findAll(): Promise<UserEntity[]> {
+    return await super.findAll(USERS_COLLECTION);
   }
 
-  async findOneUser(id: string): Promise<UserEntity> {
-    return await super.findOne(USERS_COLLECTION, id);
+  async findOne(id: string): Promise<UserEntity> {
+    return await super.findOne(id, USERS_COLLECTION);
   }
 
-  async updateUser(
-    id: string,
-    entity: Partial<UserEntity>,
-  ): Promise<UserEntity> {
-    return await super.update(USERS_COLLECTION, id, entity);
+  async update(id: string, entity: Partial<UserEntity>): Promise<UserEntity> {
+    return await super.update(id, entity, USERS_COLLECTION);
   }
 
-  async removeUser(id: string) {
-    await super.remove(USERS_COLLECTION, id);
+  async remove(id: string) {
+    await super.remove(id, USERS_COLLECTION);
   }
 }

@@ -15,7 +15,7 @@ export class PostsService {
   private async createEmptyPost(
     createPostDto: CreatePostDto,
   ): Promise<PostEntity> {
-    const user = await this.userRepsitory.findOneUser(createPostDto.userId);
+    const user = await this.userRepsitory.findOne(createPostDto.userId);
     return {
       id: undefined,
       owner: user,
@@ -31,7 +31,7 @@ export class PostsService {
   async create(createPostDto: CreatePostDto) {
     const post = await this.createEmptyPost(createPostDto);
 
-    return await this.postRepository.createPost(post);
+    return await this.postRepository.create(post);
   }
 
   findAll() {

@@ -29,7 +29,10 @@ export class BaseRepository<E extends EntityBase> {
     private readonly entityCtor: ClassConstructor<E>,
   ) {}
 
-  protected async create(collectionPath: string, entity: E): Promise<E> {
+  protected async create(entity: E): Promise<E>;
+  protected async create(entity: E, collectionPath?: string): Promise<E>;
+
+  protected async create(entity: E, collectionPath?: string): Promise<E> {
     try {
       await setDoc(doc(this.db, collectionPath, entity.id), {
         ...entity,
@@ -40,12 +43,18 @@ export class BaseRepository<E extends EntityBase> {
     }
   }
 
-  protected async findAll(collectionPath: string): Promise<E[]> {
+  protected async findAll(): Promise<E[]>;
+  protected async findAll(collectionPath?: string): Promise<E[]>;
+
+  protected async findAll(collectionPath?: string): Promise<E[]> {
     const docs = await getDocs(query(collection(this.db, collectionPath)));
     return docs.docs.map((doc) => plainToInstance(this.entityCtor, doc.data()));
   }
 
-  protected async findOne(collectionPath: string, id: string): Promise<E> {
+  protected async findOne(id: string): Promise<E>;
+  protected async findOne(id: string, collectionPath?: string): Promise<E>;
+
+  protected async findOne(id: string, collectionPath?: string): Promise<E> {
     const entityDoc = await getDoc(doc(this.db, collectionPath, id));
     if (!entityDoc.exists())
       throw new NotFoundException(
@@ -54,13 +63,20 @@ export class BaseRepository<E extends EntityBase> {
     return plainToInstance(this.entityCtor, entityDoc.data());
   }
 
+  protected async update(id: string, entity: Partial<E>): Promise<E>;
   protected async update(
-    collectionPath: string,
     id: string,
     entity: Partial<E>,
+    collectionPath?: string,
+  ): Promise<E>;
+
+  protected async update(
+    id: string,
+    entity: Partial<E>,
+    collectionPath?: string,
   ): Promise<E> {
     try {
-      const dbEntity = await this.findOne(collectionPath, id);
+      const dbEntity = await this.findOne(id, collectionPath);
       await updateDoc(
         doc(this.db, collectionPath, id),
         instanceToPlain(entity),
@@ -74,9 +90,11 @@ export class BaseRepository<E extends EntityBase> {
     }
   }
 
-  protected async remove(collectionPath: string, id: string): Promise<void> {
+  protected async remove(id: string): Promise<void>;
+  protected async remove(id: string, collectionPath?: string): Promise<void>;
+
+  protected async remove(id: string, collectionPath?: string): Promise<void> {
     try {
-      await this.findOne(collectionPath, id);
       await deleteDoc(doc(this.db, collectionPath, id));
     } catch (error) {
       console.log(error);
