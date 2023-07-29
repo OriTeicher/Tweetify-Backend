@@ -23,10 +23,7 @@ import {
 } from 'class-transformer';
 import { PaginationQueryDto } from 'src/comments/dto/pagination-query.dto';
 import { ORDER_BY } from '../constants';
-import {
-  SET_CREATED_AT,
-  SET_UUID,
-} from 'src/common/deserialize/decorators/setCreatedAt.decorator';
+import { metadataKeys } from 'src/common/deserialize/decorators/setCreatedAt.decorator';
 
 class EntityBase {
   id: string;
@@ -39,10 +36,7 @@ export class BaseRepository<E extends EntityBase> {
   ) {}
 
   private collectMetadata(entity: E) {
-    const metadataKeys = [SET_CREATED_AT, SET_UUID];
     const temp = new this.entityCtor();
-
-    console.log(Object.getOwnPropertyNames(entity));
 
     return metadataKeys.reduce((prev, key) => {
       Object.getOwnPropertyNames(entity).forEach((propertyName) => {
@@ -61,7 +55,6 @@ export class BaseRepository<E extends EntityBase> {
   protected async create(entity: E, collectionPath?: string): Promise<E> {
     try {
       Object.assign(entity, this.collectMetadata(entity));
-      console.log(entity);
       await setDoc(doc(this.db, collectionPath, entity.id), {
         ...entity,
       });
