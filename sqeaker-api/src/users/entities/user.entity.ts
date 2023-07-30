@@ -17,6 +17,8 @@ export class UserEntity {
   @SetCreatedAt()
   readonly createdAt: number;
 
+  readonly postsId: string[];
+
   @Exclude()
   readonly password: string;
 

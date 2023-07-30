@@ -10,13 +10,13 @@ import { PaginationQueryDto } from 'src/comments/dto/pagination-query.dto';
 export class PostsService {
   constructor(
     private readonly postRepository: PostRepsitory,
-    private readonly userRepsitory: UserRepositry,
+    private readonly usersRepository: UserRepositry,
   ) {}
 
   private async createEmptyPost(
     createPostDto: CreatePostDto,
   ): Promise<PostEntity> {
-    const user = await this.userRepsitory.findOne(createPostDto.userId);
+    const user = await this.usersRepository.findOne(createPostDto.userId);
     return {
       id: null,
       owner: user,
@@ -31,7 +31,13 @@ export class PostsService {
 
   async create(createPostDto: CreatePostDto) {
     const post = await this.createEmptyPost(createPostDto);
-    return await this.postRepository.create(post);
+    const savedPost = await this.postRepository.create(post);
+
+    const user = await this.usersRepository.findOne(savedPost.owner.id);
+    user.postsId.push(savedPost.id);
+    await this.usersRepository.update(user.id, user);
+
+    return savedPost;
   }
 
   async findAll(paginationQueryDto: PaginationQueryDto) {

@@ -25,6 +25,7 @@ export class UserRepositry extends BaseRepository<UserEntity> {
       username: null,
       displayName: null,
       createdAt: null,
+      postsId: [] as string[],
     };
   }
 
