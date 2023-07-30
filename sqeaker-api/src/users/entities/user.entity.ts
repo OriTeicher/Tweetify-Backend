@@ -14,7 +14,7 @@ export class UserEntity {
 
   readonly username: string;
 
-  @SetCreatedAt(Date.now())
+  @SetCreatedAt()
   readonly createdAt: number;
 
   @Exclude()

@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import { GLOBAL_PREFIX } from './common/constants';
+import { PerformanceInterceptor } from './common/interceptors/performnace.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,6 +19,7 @@ async function bootstrap() {
       },
     }),
   );
+  app.useGlobalInterceptors(new PerformanceInterceptor());
 
   app.setGlobalPrefix(GLOBAL_PREFIX);
   await app.listen(configService.get<number>('PORT'));

@@ -42,7 +42,7 @@ export class BaseRepository<E extends EntityBase> {
       Object.getOwnPropertyNames(entity).forEach((propertyName) => {
         const metadataValue = Reflect.getMetadata(key, temp, propertyName);
         if (metadataValue !== undefined) {
-          prev[propertyName] = metadataValue;
+          prev[propertyName] = metadataValue();
         }
       });
       return prev;

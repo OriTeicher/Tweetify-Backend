@@ -16,7 +16,7 @@ export class PostEntity {
 
   readonly imgUrl?: string;
 
-  @SetCreatedAt(Date.now())
+  @SetCreatedAt()
   readonly createdAt: number;
 
   readonly likes: number;

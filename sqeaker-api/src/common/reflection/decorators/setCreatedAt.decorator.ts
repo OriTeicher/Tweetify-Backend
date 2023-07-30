@@ -4,10 +4,10 @@ export const SET_CREATED_AT = Symbol('SetCreatedAt');
 export const SET_UUID = Symbol('SetID');
 export const metadataKeys = [SET_CREATED_AT, SET_UUID];
 
-export const SetCreatedAt = (date: number) => {
-  return Reflect.metadata(SET_CREATED_AT, date);
+export const SetCreatedAt = () => {
+  return Reflect.metadata(SET_CREATED_AT, () => Date.now());
 };
 
 export const SetID = (prefix: string) => {
-  return Reflect.metadata(SET_UUID, prefix + uuidv4());
+  return Reflect.metadata(SET_UUID, () => prefix + uuidv4());
 };
