@@ -18,10 +18,10 @@ export class PostsService {
   ): Promise<PostEntity> {
     const user = await this.userRepsitory.findOne(createPostDto.userId);
     return {
-      id: undefined,
+      id: null,
       owner: user,
       imgUrl: createPostDto?.imgUrl || null,
-      createdAt: createPostDto.createdAt,
+      createdAt: null,
       likes: 0,
       resqueaks: 0,
       content: createPostDto?.content || null,

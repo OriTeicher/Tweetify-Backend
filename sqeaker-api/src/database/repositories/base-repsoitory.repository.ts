@@ -23,7 +23,7 @@ import {
 } from 'class-transformer';
 import { PaginationQueryDto } from 'src/comments/dto/pagination-query.dto';
 import { ORDER_BY } from '../constants';
-import { metadataKeys } from 'src/common/deserialize/decorators/setCreatedAt.decorator';
+import { metadataKeys } from 'src/common/reflection/decorators/setCreatedAt.decorator';
 
 class EntityBase {
   id: string;
@@ -55,11 +55,13 @@ export class BaseRepository<E extends EntityBase> {
   protected async create(entity: E, collectionPath?: string): Promise<E> {
     try {
       Object.assign(entity, this.collectMetadata(entity));
-      await setDoc(doc(this.db, collectionPath, entity.id), {
-        ...entity,
-      });
+      await setDoc(
+        doc(this.db, collectionPath, entity.id),
+        instanceToPlain(entity),
+      );
       return entity;
     } catch (error) {
+      console.log(error);
       throw new InternalServerErrorException();
     }
   }

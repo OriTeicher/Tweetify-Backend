@@ -6,8 +6,7 @@ import {
   query,
   where,
 } from '@firebase/firestore';
-import { USERS_COLLECTION, USERS_UUID_PREFIX } from '../constants';
-import { v4 as uuidv4 } from 'uuid';
+import { USERS_COLLECTION } from '../constants';
 import { ConflictException, Injectable } from '@nestjs/common';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { PaginationQueryDto } from 'src/comments/dto/pagination-query.dto';
@@ -59,7 +58,7 @@ export class UserRepositry extends BaseRepository<UserEntity> {
   async create(entity: UserEntity): Promise<UserEntity> {
     const newEntity = Object.assign(this.getEmptyUser(), entity);
     await this.validateUniqueConstraints(newEntity);
-    return super.create(newEntity, USERS_COLLECTION);
+    return await super.create(newEntity, USERS_COLLECTION);
   }
 
   async findAll(paginationQueryDto: PaginationQueryDto): Promise<UserEntity[]> {

@@ -2,7 +2,7 @@ import { Exclude, Expose } from 'class-transformer';
 import {
   SetID,
   SetCreatedAt,
-} from 'src/common/deserialize/decorators/setCreatedAt.decorator';
+} from 'src/common/reflection/decorators/setCreatedAt.decorator';
 import { USERS_UUID_PREFIX } from 'src/database/constants';
 
 @Expose()
