@@ -24,29 +24,20 @@ import {
 import { PaginationQueryDto } from 'src/comments/dto/pagination-query.dto';
 import { ORDER_BY } from '../constants';
 import { metadataKeys } from 'src/common/reflection/decorators/setCreatedAt.decorator';
+import { Investigator } from 'src/common/reflection/investigator';
 
 class EntityBase {
   id: string;
 }
 
 export class BaseRepository<E extends EntityBase> {
+  private readonly investigator: Investigator<E>;
+
   constructor(
     protected readonly db: Firestore,
     protected readonly entityCtor: ClassConstructor<E>,
-  ) {}
-
-  private collectMetadata(entity: E) {
-    const temp = new this.entityCtor();
-
-    return metadataKeys.reduce((prev, key) => {
-      Object.getOwnPropertyNames(entity).forEach((propertyName) => {
-        const metadataValue = Reflect.getMetadata(key, temp, propertyName);
-        if (metadataValue !== undefined) {
-          prev[propertyName] = metadataValue();
-        }
-      });
-      return prev;
-    }, {});
+  ) {
+    this.investigator = new Investigator<E>(this.entityCtor);
   }
 
   protected async create(entity: E): Promise<E>;
@@ -54,7 +45,7 @@ export class BaseRepository<E extends EntityBase> {
 
   protected async create(entity: E, collectionPath?: string): Promise<E> {
     try {
-      Object.assign(entity, this.collectMetadata(entity));
+      Object.assign(entity, this.investigator.collectMetadata(entity));
       await setDoc(
         doc(this.db, collectionPath, entity.id),
         instanceToPlain(entity),
