@@ -11,10 +11,15 @@ export class Investigator<T> {
       Object.getOwnPropertyNames(entity).forEach((propertyName) => {
         const metadataValue = Reflect.getMetadata(key, temp, propertyName);
         if (metadataValue !== undefined) {
-          prev[propertyName] = metadataValue();
+          prev[propertyName] = this.getMetadataValue(metadataValue);
         }
       });
       return prev;
     }, {});
+  }
+
+  private getMetadataValue(metadata: any) {
+    if (typeof metadata === 'function') return metadata();
+    return metadata;
   }
 }
