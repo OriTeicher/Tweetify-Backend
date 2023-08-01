@@ -7,18 +7,11 @@ import { PostRepsitory } from 'src/database/repositories/posts.repository';
 import { PostEntity } from 'src/posts/entities/post.entity';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-
-type MockRepository<T = any> = Partial<
-  Record<'create' | 'findOne' | 'findAll' | 'update' | 'remove', jest.Mock<T>>
->;
-
-const createMockRepository = <T = any>(): MockRepository<T> => ({
-  create: jest.fn(),
-  findOne: jest.fn(),
-  findAll: jest.fn(),
-  update: jest.fn(),
-  remove: jest.fn(),
-});
+import { UpdateUserDto } from './dto/update-user.dto';
+import {
+  MockRepository,
+  createMockRepository,
+} from 'src/common/__mocks__/repositry.mock';
 
 describe('UsersService', () => {
   let service: UsersService;
@@ -51,24 +44,24 @@ describe('UsersService', () => {
     expect(service).toBeDefined();
   });
 
+  const userDto: CreateUserDto = {
+    email: 'test@gmail.com',
+    username: 'test',
+    displayName: 'test',
+    password: '123',
+  };
+
+  const expectedUser: UserEntity = {
+    id: '123',
+    email: 'test@gmail.com',
+    username: 'test',
+    displayName: 'test',
+    postsId: [],
+    createdAt: 123,
+    password: '123',
+  };
+
   describe('create', () => {
-    const userDto: CreateUserDto = {
-      email: 'test@gmail.com',
-      username: 'test',
-      displayName: 'test',
-      password: '123',
-    };
-
-    const expectedUser: UserEntity = {
-      id: '123',
-      email: 'test@gmail.com',
-      username: 'test',
-      displayName: 'test',
-      postsId: [],
-      createdAt: 123,
-      password: '123',
-    };
-
     describe('When unique', () => {
       it('Should pass', async () => {
         repo.create.mockReturnValue(expectedUser);
@@ -143,6 +136,102 @@ describe('UsersService', () => {
             );
           }
         });
+      });
+    });
+  });
+
+  describe('findAll', () => {
+    describe('The db contain users', () => {
+      it('should return an array of users', async () => {
+        const expectedArray = [expectedUser, expectedUser, expectedUser];
+        let users;
+
+        repo.findAll.mockReturnValue(expectedArray);
+        users = await service.findAll(null);
+
+        expect(users).toEqual(expectedArray);
+      });
+    });
+
+    describe('The db has no users', () => {
+      it('Should return an empty array', async () => {
+        const expectedArray = [];
+        let users;
+
+        repo.findAll.mockResolvedValue(expectedArray);
+        users = await service.findAll(null);
+
+        expect(users).toEqual([]);
+      });
+    });
+  });
+
+  describe('update', () => {
+    describe('When the user exists', () => {
+      it('Should return updated user', async () => {
+        const updateDto: UpdateUserDto = {
+          displayName: 'updated',
+          username: 'updated',
+        };
+
+        const expected = {
+          ...expectedUser,
+          ...updateDto,
+        };
+
+        repo.update.mockImplementation((id: string, updated: UserEntity) =>
+          Object.assign<UserEntity, UserEntity>(expectedUser, updated),
+        );
+        const result = await service.update('1', updateDto);
+
+        expect(result).toEqual(expected);
+      });
+    });
+
+    describe('When the user does not exist', () => {
+      it('Should throw a NotFoundException', async () => {
+        repo.update.mockImplementation((id: string, updated: UpdateUserDto) => {
+          throw new NotFoundException(
+            `${UserEntity.name} with id: ${id} does not exist`,
+          );
+        });
+
+        try {
+          await service.update('1', { username: 'updated' });
+          expect(false).toBeTruthy();
+        } catch (error) {
+          expect(error).toBeInstanceOf(NotFoundException);
+          expect(error.message).toEqual('UserEntity with id: 1 does not exist');
+        }
+      });
+    });
+  });
+
+  describe('remove', () => {
+    describe('When the user exists', () => {
+      it('Should remove the user', async () => {
+        repo.findOne.mockReturnValue({ postsId: [] });
+        repo.remove.mockImplementation((id: string) => {});
+        await service.remove('1');
+      });
+    });
+
+    describe('When the user does not exist', () => {
+      it('Should throw NotFoundException', async () => {
+        repo.findOne.mockReturnValue({ postsId: [] });
+        repo.remove.mockImplementation((id: string) => {
+          throw new NotFoundException(
+            `${UserEntity.name} with id: ${id} does not exist`,
+          );
+        });
+
+        try {
+          await service.remove('1');
+          expect(false).toBeTruthy();
+        } catch (error) {
+          expect(error).toBeInstanceOf(NotFoundException);
+          expect(error.message).toEqual('UserEntity with id: 1 does not exist');
+        }
       });
     });
   });
