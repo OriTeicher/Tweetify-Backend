@@ -23,7 +23,6 @@ import {
 } from 'class-transformer';
 import { PaginationQueryDto } from 'src/comments/dto/pagination-query.dto';
 import { ORDER_BY } from '../constants';
-import { metadataKeys } from 'src/common/reflection/decorators/setCreatedAt.decorator';
 import { Investigator } from 'src/common/reflection/investigator';
 
 class EntityBase {
@@ -91,7 +90,7 @@ export class BaseRepository<E extends EntityBase> {
     const entityDoc = await getDoc(doc(this.db, collectionPath, id));
     if (!entityDoc.exists())
       throw new NotFoundException(
-        `${this.entityCtor.name} with id: ${id} does not exist`,
+        `${this.investigator.getClassName()} with id: ${id} does not exist`,
       );
     return plainToInstance(this.entityCtor, entityDoc.data());
   }

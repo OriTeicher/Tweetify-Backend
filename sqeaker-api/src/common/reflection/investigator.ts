@@ -18,6 +18,10 @@ export class Investigator<T> {
     }, {});
   }
 
+  getClassName() {
+    return this.ctor.name;
+  }
+
   private getMetadataValue(metadata: any) {
     if (typeof metadata === 'function') return metadata();
     return metadata;
