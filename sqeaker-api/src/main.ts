@@ -20,6 +20,7 @@ async function bootstrap() {
     }),
   );
   app.useGlobalInterceptors(new PerformanceInterceptor());
+  app.enableCors();
 
   app.setGlobalPrefix(GLOBAL_PREFIX);
   await app.listen(configService.get<number>('PORT'));
