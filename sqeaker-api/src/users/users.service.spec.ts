@@ -69,38 +69,38 @@ describe('UsersService', () => {
 
         expect(user).toEqual(expectedUser);
       });
+    });
 
-      describe('When not unique', () => {
-        it('Should fail with ConflictErrorException', async () => {
-          const arr: UserEntity[] = [];
+    describe('When not unique', () => {
+      it('Should fail with ConflictErrorException', async () => {
+        const arr: UserEntity[] = [];
 
-          repo.create.mockImplementation(async (newUser) => {
-            newUser = {
-              ...newUser,
-              id: '123',
-              createdAt: 123,
-            };
+        repo.create.mockImplementation(async (newUser) => {
+          newUser = {
+            ...newUser,
+            id: '123',
+            createdAt: 123,
+          };
 
-            if (arr.find((entity) => entity.id === newUser.id))
-              throw new ConflictException(
-                `User with email: '${newUser.email}' already exists`,
-              );
-
-            arr.push(newUser);
-          });
-
-          try {
-            await service.create(userDto);
-            await service.create(userDto);
-
-            expect(false).toBeTruthy();
-          } catch (error) {
-            expect(error).toBeInstanceOf(ConflictException);
-            expect(error.message).toEqual(
-              `User with email: '${userDto.email}' already exists`,
+          if (arr.find((entity) => entity.id === newUser.id))
+            throw new ConflictException(
+              `User with email: '${newUser.email}' already exists`,
             );
-          }
+
+          arr.push(newUser);
         });
+
+        try {
+          await service.create(userDto);
+          await service.create(userDto);
+
+          expect(false).toBeTruthy();
+        } catch (error) {
+          expect(error).toBeInstanceOf(ConflictException);
+          expect(error.message).toEqual(
+            `User with email: '${userDto.email}' already exists`,
+          );
+        }
       });
     });
   });
@@ -115,27 +115,27 @@ describe('UsersService', () => {
         const foundUser = await service.findOne(userId);
         expect(foundUser).toEqual(user);
       });
+    });
 
-      describe('When does not exist', () => {
-        it('Should throw a NotFoundError', async () => {
-          const userId = '1';
+    describe('When does not exist', () => {
+      it('Should throw a NotFoundError', async () => {
+        const userId = '1';
 
-          repo.findOne.mockImplementation((id: string) => {
-            throw new NotFoundException(
-              `UserEntity with id: ${id} does not exist`,
-            );
-          });
-
-          try {
-            await service.findOne(userId);
-            expect(false).toBeTruthy();
-          } catch (error) {
-            expect(error).toBeInstanceOf(NotFoundException);
-            expect(error.message).toEqual(
-              `UserEntity with id: ${userId} does not exist`,
-            );
-          }
+        repo.findOne.mockImplementation((id: string) => {
+          throw new NotFoundException(
+            `UserEntity with id: ${id} does not exist`,
+          );
         });
+
+        try {
+          await service.findOne(userId);
+          expect(false).toBeTruthy();
+        } catch (error) {
+          expect(error).toBeInstanceOf(NotFoundException);
+          expect(error.message).toEqual(
+            `UserEntity with id: ${userId} does not exist`,
+          );
+        }
       });
     });
   });
