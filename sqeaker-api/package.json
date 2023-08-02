@@ -20,11 +20,13 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@elastic/elasticsearch": "^8.9.0",
     "@firebase/firestore": "^4.1.0",
     "@firebase/performance": "^0.6.4",
     "@nestjs/common": "^10.1.2",
     "@nestjs/config": "^3.0.0",
     "@nestjs/core": "^10.1.2",
+    "@nestjs/elasticsearch": "^10.0.1",
     "@nestjs/event-emitter": "^2.0.0",
     "@nestjs/mapped-types": "*",
     "@nestjs/platform-express": "^10.1.2",

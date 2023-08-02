@@ -5,6 +5,8 @@ import { UsersModule } from './users/users.module';
 import { DatabaseModule } from './database/database.module';
 import { CommentsModule } from './comments/comments.module';
 import * as Joi from 'joi';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { SearchModule } from './search/search.module';
 
 @Module({
   imports: [
@@ -25,6 +27,8 @@ import * as Joi from 'joi';
     PostsModule,
     DatabaseModule,
     CommentsModule,
+    EventEmitterModule.forRoot(),
+    SearchModule,
   ],
   controllers: [],
   providers: [],
