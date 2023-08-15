@@ -3,12 +3,14 @@ import * as crypto from 'crypto';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
-export class EncryptionService {
+export class EncryptService {
   private readonly algo = 'aes-256-gcm';
 
   constructor(private readonly configService: ConfigService) {}
 
   encrypt(text: string) {
+    if (!text) return null;
+
     const iv = crypto.randomBytes(16);
     const cipher = crypto.createCipheriv(
       this.algo,
@@ -23,8 +25,10 @@ export class EncryptionService {
     return `${authTag}|${iv.toString('hex')}|${encrypted}`;
   }
 
-  decrypt(encrypted: string) {
-    const [authTag, iv, encryptedText] = encrypted.split('|');
+  decrypt(text: string) {
+    if (!text) return null;
+
+    const [authTag, iv, encrypted] = text.split('|');
     const decipher = crypto.createDecipheriv(
       this.algo,
       this.configService.get('SECRET_KEY'),
@@ -32,7 +36,7 @@ export class EncryptionService {
     );
     decipher.setAuthTag(Buffer.from(authTag, 'hex'));
 
-    let decrypted = decipher.update(encryptedText, 'hex', 'utf-8');
+    let decrypted = decipher.update(encrypted, 'hex', 'utf-8');
     decrypted += decipher.final('utf-8');
     return decrypted;
   }

@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { EncryptionService } from './encryption.service';
+import { EncryptService } from './encrypt.service';
 import { ConfigService } from '@nestjs/config';
 import * as crypto from 'crypto';
 
@@ -9,14 +9,14 @@ const mockConfigService: configServiceMock = {
   get: jest.fn(),
 };
 
-describe('EncryptionService', () => {
-  let service: EncryptionService;
+describe('EncryptService', () => {
+  let service: EncryptService;
   let configService: typeof mockConfigService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        EncryptionService,
+        EncryptService,
         {
           provide: ConfigService,
           useValue: mockConfigService,
@@ -24,7 +24,7 @@ describe('EncryptionService', () => {
       ],
     }).compile();
 
-    service = module.get<EncryptionService>(EncryptionService);
+    service = module.get<EncryptService>(EncryptService);
     configService = module.get(ConfigService);
   });
 
