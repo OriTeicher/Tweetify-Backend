@@ -6,6 +6,8 @@ import { DatabaseModule } from './database/database.module';
 import { CommentsModule } from './comments/comments.module';
 import { IamModule } from './iam/iam.module';
 import * as Joi from 'joi';
+import { SearchModule } from './search/search.module';
+import { LoggerModule } from './logger/logger.module';
 
 @Module({
   imports: [
@@ -27,6 +29,8 @@ import * as Joi from 'joi';
         PORT: Joi.number().optional().default(3000),
       }),
     }),
+    SearchModule,
+    LoggerModule,
     UsersModule,
     PostsModule,
     DatabaseModule,

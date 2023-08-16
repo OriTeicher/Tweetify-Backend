@@ -43,13 +43,14 @@ export class UserRepositry extends BaseRepository<UserEntity> {
   }
 
   private async validateUniqueConstraints(entity: UserEntity) {
-    const isEmailUnique = await this.isUnique(entity.email, 'email');
+    const isEmailUnique = await this.isUnique(
+      entity.hashedEmail,
+      'hashedEmail',
+    );
     const isUsernameUnique = await this.isUnique(entity.username, 'username');
 
     if (!isEmailUnique)
-      throw new ConflictException(
-        `User with email: '${entity.email}' already exists`,
-      );
+      throw new ConflictException(`User with this email already exists`);
 
     if (!isUsernameUnique)
       throw new ConflictException(

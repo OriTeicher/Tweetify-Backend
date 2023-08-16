@@ -3,6 +3,7 @@ import { LoggerService } from './logger.service';
 import { Request, Response, NextFunction } from 'express';
 import { ERROR_RANGE, INFO_RANGE, WARN_RANGE } from './constatns';
 import { REQUEST_USER_KEY } from 'src/iam/constants';
+import { UserEntity } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
@@ -19,10 +20,11 @@ export class LoggerMiddleware implements NestMiddleware {
       const { method, originalUrl } = req;
       const { statusCode, statusMessage } = res;
       const { remoteAddress } = req.socket;
-      const sub: number | null = req[REQUEST_USER_KEY]['sub'] ?? null;
+      const { id }: UserEntity | undefined =
+        (req[REQUEST_USER_KEY] as UserEntity) || ({} as UserEntity);
 
       const normalizedResponseStatus = this.normalize(statusCode);
-      const message = `${method} ${originalUrl} ${statusCode} ${statusMessage} | user id:${sub} ${remoteAddress}`;
+      const message = `${method} ${originalUrl} ${statusCode} ${statusMessage} | user id:${id} ${remoteAddress}`;
 
       this.loggerMap[INFO_RANGE](message);
       this.loggerMap[normalizedResponseStatus](message);

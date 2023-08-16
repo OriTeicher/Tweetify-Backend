@@ -34,6 +34,11 @@ export class UsersController {
     return this.usersService.findAll(paginationQueryDto);
   }
 
+  @Get('/search')
+  search(@Query('q') text: string) {
+    return this.usersService.search(text);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);

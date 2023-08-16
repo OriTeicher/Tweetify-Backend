@@ -8,6 +8,8 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import jwtConfig from '../config/jwt.config';
 import { ConfigType } from '@nestjs/config';
+import { plainToInstance } from 'class-transformer';
+import { REQUEST_USER_KEY } from '../constants';
 
 @Injectable()
 export class AuthService {
@@ -38,13 +40,12 @@ export class AuthService {
       hashedEmail,
     });
 
-    return user;
+    return plainToInstance(UserEntity, user);
   }
 
   async validateUser(email: string, password: string) {
     const hashedEmail = await this.hashService.hashDeterministic(email);
     const user = await this.usersService.findOneEmail(hashedEmail);
-    console.log(user);
     const cmpResult = await this.hashService.compare(password, user.password);
 
     if (user === undefined || !cmpResult) return null;
@@ -53,7 +54,7 @@ export class AuthService {
   }
 
   async signin(request: Request) {
-    const user = request['user'] as UserEntity;
+    const user = plainToInstance(UserEntity, request[REQUEST_USER_KEY]);
     const accessToken = await this.jwtService.signAsync({
       sub: user.id,
       email: user.email,

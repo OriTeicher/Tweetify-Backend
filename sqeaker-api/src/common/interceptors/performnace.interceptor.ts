@@ -2,6 +2,7 @@ import {
   CallHandler,
   ExecutionContext,
   Injectable,
+  Logger,
   NestInterceptor,
 } from '@nestjs/common';
 
@@ -10,7 +11,9 @@ import { tap } from 'rxjs';
 @Injectable()
 export class PerformanceInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler) {
-    console.time('performance');
-    return next.handle().pipe(tap(() => console.timeEnd('performance')));
+    const start = Date.now();
+    return next
+      .handle()
+      .pipe(tap(() => Logger.warn(`Response took: ${Date.now() - start}ms`)));
   }
 }

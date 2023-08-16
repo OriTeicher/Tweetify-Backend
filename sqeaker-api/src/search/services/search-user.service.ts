@@ -43,9 +43,12 @@ export default class SearchUserService implements ISearchService<UserEntity> {
     const searchQuery: SearchQuery = {
       body: {
         query: {
-          multi_match: {
-            query: text,
-            fields: FIELDS_TO_MATCH_USER,
+          bool: {
+            should: FIELDS_TO_MATCH_USER.map((field) => ({
+              wildcard: {
+                [field]: `${text}`,
+              },
+            })),
           },
         },
       },
