@@ -25,12 +25,6 @@ import {
 import { PaginationQueryDto } from 'src/comments/dto/pagination-query.dto';
 import { ORDER_BY } from '../constants';
 import { Investigator } from 'src/common/reflection/investigator';
-import { EventEmitter2 } from '@nestjs/event-emitter';
-import {
-  EVENT_CREATE_POSTFIX,
-  EVENT_REMOVE_POSTFIX,
-  EVENT_UPDATE_POSTFIX,
-} from 'src/common/constants';
 
 class EntityBase {
   id: string;
@@ -42,7 +36,6 @@ export class BaseRepository<E extends EntityBase> {
   constructor(
     protected readonly db: Firestore,
     protected readonly entityCtor: ClassConstructor<E>,
-    private readonly eventEmitter: EventEmitter2,
   ) {
     this.investigator = new Investigator<E>(this.entityCtor);
   }
@@ -58,7 +51,6 @@ export class BaseRepository<E extends EntityBase> {
         instanceToPlain(entity),
       );
 
-      this.eventEmitter.emit(collectionPath + EVENT_CREATE_POSTFIX, entity);
       return entity;
     } catch (error) {
       console.log(error);
@@ -150,7 +142,6 @@ export class BaseRepository<E extends EntityBase> {
       );
       Object.assign(newEntity, updatedEntity);
 
-      this.eventEmitter.emit(collectionPath + EVENT_UPDATE_POSTFIX, newEntity);
       return newEntity;
     } catch (error) {
       throw new NotFoundException(
@@ -165,7 +156,6 @@ export class BaseRepository<E extends EntityBase> {
   protected async remove(id: string, collectionPath?: string): Promise<void> {
     try {
       await deleteDoc(doc(this.db, collectionPath, id));
-      this.eventEmitter.emit(collectionPath + EVENT_REMOVE_POSTFIX, id);
     } catch (error) {
       console.log(error);
       throw new InternalServerErrorException();
