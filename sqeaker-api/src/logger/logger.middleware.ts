@@ -2,7 +2,7 @@ import { Injectable, NestMiddleware } from '@nestjs/common';
 import { LoggerService } from './logger.service';
 import { Request, Response, NextFunction } from 'express';
 import { ERROR_RANGE, INFO_RANGE, WARN_RANGE } from './constatns';
-import { REQUEST_USER_KEY } from 'src/iam/iam.constants';
+import { REQUEST_USER_KEY } from 'src/iam/constants';
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
@@ -19,7 +19,7 @@ export class LoggerMiddleware implements NestMiddleware {
       const { method, originalUrl } = req;
       const { statusCode, statusMessage } = res;
       const { remoteAddress } = req.socket;
-      const sub: number | null = req[REQUEST_USER_KEY]?.sub ?? null;
+      const sub: number | null = req[REQUEST_USER_KEY]['sub'] ?? null;
 
       const normalizedResponseStatus = this.normalize(statusCode);
       const message = `${method} ${originalUrl} ${statusCode} ${statusMessage} | user id:${sub} ${remoteAddress}`;

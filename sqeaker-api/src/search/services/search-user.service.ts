@@ -1,37 +1,37 @@
 import { Injectable } from '@nestjs/common';
 import SearchServiceBase from './search-base.service';
 import ISearchService from '../interfaces/search-service.interface';
-import User from 'src/user/entities/user.entity';
+import { UserEntity } from 'src/users/entities/user.entity';
 import { FIELDS_TO_MATCH_USER, USER_INDEX } from '../constants';
 import SearchQuery from '../interfaces/search-query.interface';
 
 interface ISearchUserEntity {
-  usrId: number;
-  firstName: string;
-  lastName: string;
+  usrId: string;
+  username: string;
+  displayName: string;
 }
 
 @Injectable()
-export default class SearchUserService implements ISearchService<User> {
+export default class SearchUserService implements ISearchService<UserEntity> {
   constructor(
     private readonly searchService: SearchServiceBase<ISearchUserEntity>,
   ) {
     searchService.setIndex(USER_INDEX);
   }
 
-  async indexEntity(id: string, entity: User) {
+  async indexEntity(id: string, entity: UserEntity) {
     return await this.searchService.indexEntity(id, {
       usrId: entity.id,
-      firstName: entity.firstName,
-      lastName: entity.lastName,
+      username: entity.username,
+      displayName: entity.displayName,
     });
   }
 
-  async updateEntity(newEntity: User) {
+  async updateEntity(newEntity: UserEntity) {
     return await this.searchService.updateEntity(newEntity.id.toString(), {
       usrId: newEntity.id,
-      firstName: newEntity.firstName,
-      lastName: newEntity.lastName,
+      username: newEntity.username,
+      displayName: newEntity.displayName,
     });
   }
 

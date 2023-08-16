@@ -9,7 +9,6 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { AuthService } from './auth.service';
-import { SignInDto } from './dto/signin.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { Request } from 'express';
 
@@ -20,12 +19,18 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Post('sign-in')
-  signIn(@Req() request: Request) {
-    return this.authService.signin(request);
+  async signIn(@Req() request: Request) {
+    const user = await this.authService.signin(request);
+    return user;
   }
 
   @Post('sign-up')
   signUp(@Body() createUserDto: CreateUserDto) {
     return this.authService.signup(createUserDto);
+  }
+
+  @Post('sign-out')
+  signOut(@Req() request: Request) {
+    return this.authService.signout(request);
   }
 }
