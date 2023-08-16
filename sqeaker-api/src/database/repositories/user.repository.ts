@@ -21,6 +21,7 @@ export class UserRepositry extends BaseRepository<UserEntity> {
     return {
       id: null,
       email: null,
+      hashedEmail: null,
       password: null,
       username: null,
       displayName: null,
@@ -42,13 +43,14 @@ export class UserRepositry extends BaseRepository<UserEntity> {
   }
 
   private async validateUniqueConstraints(entity: UserEntity) {
-    const isEmailUnique = await this.isUnique(entity.email, 'email');
+    const isEmailUnique = await this.isUnique(
+      entity.hashedEmail,
+      'hashedEmail',
+    );
     const isUsernameUnique = await this.isUnique(entity.username, 'username');
 
     if (!isEmailUnique)
-      throw new ConflictException(
-        `User with email: '${entity.email}' already exists`,
-      );
+      throw new ConflictException(`User with this email already exists`);
 
     if (!isUsernameUnique)
       throw new ConflictException(
@@ -68,6 +70,10 @@ export class UserRepositry extends BaseRepository<UserEntity> {
 
   async findOne(id: string): Promise<UserEntity> {
     return await super.findOne(id, USERS_COLLECTION);
+  }
+
+  async findOneEmail(email: string): Promise<UserEntity> {
+    return await super.findOneEmail(email, USERS_COLLECTION);
   }
 
   async update(id: string, entity: Partial<UserEntity>): Promise<UserEntity> {

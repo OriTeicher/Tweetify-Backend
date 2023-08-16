@@ -4,9 +4,10 @@ import { PostsModule } from './posts/posts.module';
 import { UsersModule } from './users/users.module';
 import { DatabaseModule } from './database/database.module';
 import { CommentsModule } from './comments/comments.module';
+import { IamModule } from './iam/iam.module';
 import * as Joi from 'joi';
-import { EventEmitterModule } from '@nestjs/event-emitter';
 import { SearchModule } from './search/search.module';
+import { LoggerModule } from './logger/logger.module';
 
 @Module({
   imports: [
@@ -20,15 +21,21 @@ import { SearchModule } from './search/search.module';
         FIREBASE_MESSAGING_SENDER_ID: Joi.string().required(),
         FIREBASE_APP_ID: Joi.string().required(),
         FIREBASE_MEASURMENT_ID: Joi.string().required(),
+        JWT_SECRET: Joi.string().required(),
+        JWT_TOKEN_AUDIENCE: Joi.string().required(),
+        JWT_TOKEN_ISSUER: Joi.string().required(),
+        JWT_ACCESS_TOKEN_TTL: Joi.number().required(),
+        SECRET_KEY: Joi.string().required(),
         PORT: Joi.number().optional().default(3000),
       }),
     }),
+    SearchModule,
+    LoggerModule,
     UsersModule,
     PostsModule,
     DatabaseModule,
     CommentsModule,
-    EventEmitterModule.forRoot(),
-    SearchModule,
+    IamModule,
   ],
   controllers: [],
   providers: [],

@@ -11,6 +11,7 @@ import {
   setDoc,
   startAt,
   updateDoc,
+  where,
 } from '@firebase/firestore';
 import {
   InternalServerErrorException,
@@ -104,7 +105,32 @@ export class BaseRepository<E extends EntityBase> {
     return plainToInstance(this.entityCtor, entityDoc.data());
   }
 
-  protected async update(id: string, updatedEntity: Partial<E>): Promise<E>;
+  protected async findOneEmail(id: string): Promise<E>;
+  protected async findOneEmail(id: string, collectionPath?: string): Promise<E>;
+
+  protected async findOneEmail(
+    email: string,
+    collectionPath?: string,
+  ): Promise<E> {
+    const entityDoc = await getDocs(
+      query(
+        collection(this.db, collectionPath),
+        where('hashedEmail', '==', email),
+      ),
+    );
+
+    if (entityDoc.docs.length <= 0)
+      throw new NotFoundException(
+        `${this.investigator.getClassName()} does not exist`,
+      );
+    return entityDoc.docs.map((doc) => {
+      return plainToInstance(this.entityCtor, doc.data(), {
+        ignoreDecorators: true,
+      });
+    })[0];
+  }
+
+  protected async update(id: string, entity: Partial<E>): Promise<E>;
   protected async update(
     id: string,
     updatedEntity: Partial<E>,

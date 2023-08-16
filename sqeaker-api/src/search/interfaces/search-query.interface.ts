@@ -1,3 +1,3 @@
-export interface SearchQuery {
+export default interface SearchQuery {
   body: object;
 }

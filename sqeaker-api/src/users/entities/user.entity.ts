@@ -10,7 +10,11 @@ export class UserEntity {
   @SetID(USERS_UUID_PREFIX)
   readonly id: string;
 
+  @Exclude()
   readonly email: string;
+
+  @Exclude()
+  readonly hashedEmail: string;
 
   readonly username: string;
 

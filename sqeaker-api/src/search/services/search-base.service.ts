@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { ElasticsearchService } from '@nestjs/elasticsearch';
-import { SearchQuery } from '../interfaces/search-query.interface';
+import SearchQuery from '../interfaces/search-query.interface';
 
 @Injectable()
-export class SearchServiceBase<T> {
+export default class SearchServiceBase<T> {
   // Index/databse.
   protected index: string;
 
