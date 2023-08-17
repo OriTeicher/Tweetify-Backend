@@ -40,7 +40,7 @@ export class AuthService {
       hashedEmail,
     });
 
-    return plainToInstance(UserEntity, user);
+    return user;
   }
 
   async validateUser(email: string, password: string) {
@@ -54,7 +54,7 @@ export class AuthService {
   }
 
   async signin(request: Request) {
-    const user = plainToInstance(UserEntity, request[REQUEST_USER_KEY]);
+    const user = request[REQUEST_USER_KEY] as UserEntity;
     const accessToken = await this.jwtService.signAsync({
       sub: user.id,
       email: user.email,

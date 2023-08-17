@@ -4,6 +4,8 @@ import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import { GLOBAL_PREFIX } from './common/constants';
 import { PerformanceInterceptor } from './common/interceptors/performnace.interceptor';
+import { SerializeInterceptor } from './common/serialize/serialize.interceptor';
+import { UserEntity } from './users/entities/user.entity';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -19,7 +21,10 @@ async function bootstrap() {
       },
     }),
   );
-  app.useGlobalInterceptors(new PerformanceInterceptor());
+  app.useGlobalInterceptors(
+    new PerformanceInterceptor(),
+    new SerializeInterceptor(UserEntity),
+  );
   app.enableCors();
 
   app.setGlobalPrefix(GLOBAL_PREFIX);
