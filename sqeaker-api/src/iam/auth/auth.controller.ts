@@ -11,6 +11,7 @@ import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { Request } from 'express';
+import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -32,5 +33,11 @@ export class AuthController {
   @Post('sign-out')
   signOut(@Req() request: Request) {
     return this.authService.signout(request);
+  }
+
+  @UseGuards(JwtRefreshGuard)
+  @Post('refresh')
+  refresh(@Req() request: Request) {
+    return this.authService.refresh(request);
   }
 }

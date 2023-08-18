@@ -25,6 +25,7 @@ import { LoggerModule } from './logger/logger.module';
         JWT_TOKEN_AUDIENCE: Joi.string().required(),
         JWT_TOKEN_ISSUER: Joi.string().required(),
         JWT_ACCESS_TOKEN_TTL: Joi.number().required(),
+        JWT_REFRESH_JWT_TTL: Joi.number().required(),
         SECRET_KEY: Joi.string().required(),
         PORT: Joi.number().optional().default(3000),
       }),

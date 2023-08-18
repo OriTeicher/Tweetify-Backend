@@ -16,6 +16,9 @@ export class UserEntity {
   @Exclude()
   readonly hashedEmail: string;
 
+  @Exclude()
+  readonly refreshToken: string;
+
   readonly username: string;
 
   @SetCreatedAt()

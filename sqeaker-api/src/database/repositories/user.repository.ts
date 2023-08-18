@@ -22,6 +22,7 @@ export class UserRepositry extends BaseRepository<UserEntity> {
       id: null,
       email: null,
       hashedEmail: null,
+      refreshToken: null,
       password: null,
       username: null,
       displayName: null,

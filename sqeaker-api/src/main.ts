@@ -6,11 +6,13 @@ import { GLOBAL_PREFIX } from './common/constants';
 import { PerformanceInterceptor } from './common/interceptors/performnace.interceptor';
 import { SerializeInterceptor } from './common/serialize/serialize.interceptor';
 import { UserEntity } from './users/entities/user.entity';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 
+  app.use(cookieParser());
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

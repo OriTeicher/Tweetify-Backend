@@ -94,7 +94,9 @@ export class BaseRepository<E extends EntityBase> {
       throw new NotFoundException(
         `${this.investigator.getClassName()} with id: ${id} does not exist`,
       );
-    return plainToInstance(this.entityCtor, entityDoc.data());
+    return plainToInstance(this.entityCtor, entityDoc.data(), {
+      ignoreDecorators: true,
+    });
   }
 
   protected async findOneEmail(id: string): Promise<E>;

@@ -15,6 +15,10 @@ export class CreateUserDto {
   @IsEmpty()
   readonly hashedEmail: string;
 
+  @IsOptional()
+  @IsEmpty()
+  readonly refreshToken: string;
+
   @IsString()
   @IsNotEmpty()
   readonly username: string;
