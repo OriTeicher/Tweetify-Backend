@@ -15,7 +15,6 @@ async function bootstrap() {
   app.use(cookieParser());
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true,
       transform: true,
       forbidNonWhitelisted: true,
       transformOptions: {
@@ -27,7 +26,10 @@ async function bootstrap() {
     new PerformanceInterceptor(),
     new SerializeInterceptor(UserEntity),
   );
-  app.enableCors();
+  app.enableCors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  });
 
   app.setGlobalPrefix(GLOBAL_PREFIX);
   await app.listen(configService.get<number>('PORT'));
