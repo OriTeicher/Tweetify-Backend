@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
@@ -12,6 +13,7 @@ import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { Request } from 'express';
 import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -39,5 +41,11 @@ export class AuthController {
   @Post('refresh')
   refresh(@Req() request: Request) {
     return this.authService.refresh(request);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/ping')
+  ping(@Req() request: Request) {
+    return this.authService.ping(request);
   }
 }

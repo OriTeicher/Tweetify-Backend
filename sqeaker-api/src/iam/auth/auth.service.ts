@@ -100,6 +100,11 @@ export class AuthService {
     return user;
   }
 
+  async ping(request: Request) {
+    const user = request['user'] as UserEntity;
+    return user;
+  }
+
   async signout(request: Request) {
     request.res.setHeader('Set-Cookie', [
       'accessToken=; HttpOnly; Path=/; Max-Age=0',
