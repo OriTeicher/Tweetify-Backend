@@ -27,7 +27,7 @@ async function bootstrap() {
     new SerializeInterceptor(UserEntity),
   );
   app.enableCors({
-    origin: 'http://localhost:3000',
+    origin: configService.get<string>('CORS_ORIGIN'),
     credentials: true,
   });
 

@@ -10,6 +10,8 @@ import jwtConfig from '../config/jwt.config';
 import { ConfigType } from '@nestjs/config';
 import { REQUEST_USER_KEY } from '../constants';
 
+// TODO: Add SameSite to cookies.
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -68,8 +70,8 @@ export class AuthService {
     });
 
     request.res.setHeader('Set-Cookie', [
-      `accessToken=${accessToken}; HttpOnly; Path=/; Max-Age=${this.JwtCofnig.accessTokenTTL}`,
-      `refresh=${refreshToken}; HttpOnly; Path=/; Max-Age=${this.JwtCofnig.refreshTokenTtl}`,
+      `accessToken=${accessToken}; HttpOnly; Path=/; SameSite=Strict; Max-Age=${this.JwtCofnig.accessTokenTTL}`,
+      `refresh=${refreshToken}; HttpOnly; Path=/; SameSite=Strict; Max-Age=${this.JwtCofnig.refreshTokenTtl}`,
     ]);
 
     return user;
@@ -94,7 +96,7 @@ export class AuthService {
 
     request.res.setHeader(
       'Set-Cookie',
-      `accessToken=${accessToken}; HttpOnly; Path=/; Max-Age=${this.JwtCofnig.accessTokenTTL}`,
+      `accessToken=${accessToken}; HttpOnly; Path=/; SameSite=Strict; Max-Age=${this.JwtCofnig.accessTokenTTL}`,
     );
 
     return user;
@@ -107,8 +109,8 @@ export class AuthService {
 
   async signout(request: Request) {
     request.res.setHeader('Set-Cookie', [
-      'accessToken=; HttpOnly; Path=/; Max-Age=0',
-      'refresh=; HttpOnly; Path=/; Max-Age=',
+      'accessToken=; HttpOnly; Path=/; SameSite=Strict; Max-Age=0',
+      'refresh=; HttpOnly; Path=/; SameSite=Strict; Max-Age=0',
     ]);
   }
 }

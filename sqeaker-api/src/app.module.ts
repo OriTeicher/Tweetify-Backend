@@ -8,6 +8,8 @@ import { IamModule } from './iam/iam.module';
 import * as Joi from 'joi';
 import { SearchModule } from './search/search.module';
 import { LoggerModule } from './logger/logger.module';
+import { CacheModule } from './cache/cache.module';
+import { ConentDistributionModule } from './conent-distribution/conent-distribution.module';
 
 @Module({
   imports: [
@@ -21,12 +23,14 @@ import { LoggerModule } from './logger/logger.module';
         FIREBASE_MESSAGING_SENDER_ID: Joi.string().required(),
         FIREBASE_APP_ID: Joi.string().required(),
         FIREBASE_MEASURMENT_ID: Joi.string().required(),
+        REDIS_URL: Joi.string().required(),
         JWT_SECRET: Joi.string().required(),
         JWT_TOKEN_AUDIENCE: Joi.string().required(),
         JWT_TOKEN_ISSUER: Joi.string().required(),
         JWT_ACCESS_TOKEN_TTL: Joi.number().required(),
         JWT_REFRESH_JWT_TTL: Joi.number().required(),
         SECRET_KEY: Joi.string().required(),
+        CORS_ORIGIN: Joi.string().required(),
         PORT: Joi.number().optional().default(3000),
       }),
     }),
@@ -37,6 +41,8 @@ import { LoggerModule } from './logger/logger.module';
     DatabaseModule,
     CommentsModule,
     IamModule,
+    CacheModule,
+    ConentDistributionModule,
   ],
   controllers: [],
   providers: [],
