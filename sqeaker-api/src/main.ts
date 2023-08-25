@@ -13,6 +13,13 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
 
   app.use(cookieParser());
+  app.enableShutdownHooks();
+  app.setGlobalPrefix(GLOBAL_PREFIX);
+  app.enableCors({
+    origin: configService.get<string>('CORS_ORIGIN'),
+    credentials: true,
+  });
+
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
@@ -27,12 +34,7 @@ async function bootstrap() {
     new PerformanceInterceptor(),
     new SerializeInterceptor(UserEntity),
   );
-  app.enableCors({
-    origin: configService.get<string>('CORS_ORIGIN'),
-    credentials: true,
-  });
 
-  app.setGlobalPrefix(GLOBAL_PREFIX);
   await app.listen(configService.get<number>('PORT'));
 }
 bootstrap();

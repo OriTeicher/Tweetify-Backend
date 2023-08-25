@@ -8,12 +8,15 @@ import {
   Delete,
   Query,
   UseGuards,
+  UseInterceptors,
+  Req,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PaginationQueryDto } from 'src/comments/dto/pagination-query.dto';
 import { JwtAuthGuard } from 'src/iam/auth/guards/jwt-auth.guard';
+import { CacheInterceptor } from 'src/cache/cache.interceptor';
 
 @UseGuards(JwtAuthGuard)
 @Controller('users')
@@ -25,16 +28,19 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
+  @UseInterceptors(CacheInterceptor)
   @Get()
-  findAll(@Query() paginationQueryDto: PaginationQueryDto) {
+  findAll(@Req() req, @Query() paginationQueryDto: PaginationQueryDto) {
     return this.usersService.findAll(paginationQueryDto);
   }
 
+  @UseInterceptors(CacheInterceptor)
   @Get('/search')
   search(@Query('q') text: string) {
     return this.usersService.search(text);
   }
 
+  @UseInterceptors(CacheInterceptor)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);

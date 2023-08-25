@@ -4,6 +4,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { createClient } from 'redis';
 import { REDIS_CLIENT } from './constants';
 import { retryStrategy } from './redis-retry.strategy';
+import { CacheInterceptor } from './cache.interceptor';
 
 @Module({
   imports: [ConfigModule],
@@ -22,6 +23,7 @@ import { retryStrategy } from './redis-retry.strategy';
       },
       inject: [ConfigService],
     },
+    CacheInterceptor,
   ],
   exports: [CacheService],
 })
