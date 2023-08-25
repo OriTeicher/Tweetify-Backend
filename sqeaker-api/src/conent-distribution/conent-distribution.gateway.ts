@@ -7,7 +7,7 @@ import { ConentDistributionService } from './conent-distribution.service';
 import { CreateConentDistributionDto } from './dto/create-conent-distribution.dto';
 import { UpdateConentDistributionDto } from './dto/update-conent-distribution.dto';
 
-@WebSocketGateway()
+@WebSocketGateway(3002)
 export class ConentDistributionGateway {
   constructor(
     private readonly conentDistributionService: ConentDistributionService,

@@ -19,15 +19,29 @@ export class UserEntity {
   @Exclude()
   readonly refreshToken: string;
 
-  readonly username: string;
+  @Exclude()
+  readonly password: string;
 
   @SetCreatedAt()
   readonly createdAt: number;
 
+  readonly description: string;
+
+  readonly followers: string[];
+
+  readonly following: string[];
+
+  readonly isAdmin: boolean;
+
+  readonly isVerified: boolean;
+
+  readonly username: string;
+
   readonly postsId: string[];
 
-  @Exclude()
-  readonly password: string;
-
   readonly displayName: string;
+
+  readonly profileBgUrl?: string;
+
+  readonly profileImgUrl?: string;
 }

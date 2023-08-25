@@ -1,4 +1,5 @@
 import {
+  IsArray,
   IsEmail,
   IsEmpty,
   IsNotEmpty,
@@ -30,4 +31,16 @@ export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   readonly displayName: string;
+
+  @IsString()
+  @IsOptional()
+  readonly description: string;
+
+  @IsString()
+  @IsOptional()
+  readonly profileBgUrl: string;
+
+  @IsString()
+  @IsOptional()
+  readonly profileImgUrl: string;
 }

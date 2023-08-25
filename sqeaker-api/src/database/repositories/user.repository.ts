@@ -27,7 +27,14 @@ export class UserRepositry extends BaseRepository<UserEntity> {
       username: null,
       displayName: null,
       createdAt: null,
+      isAdmin: false,
+      isVerified: false,
+      description: null,
+      profileBgUrl: null,
+      profileImgUrl: null,
       postsId: [] as string[],
+      followers: [] as string[],
+      following: [] as string[],
     };
   }
 
