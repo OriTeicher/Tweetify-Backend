@@ -13,7 +13,10 @@ import { LocalAuthGuard } from './guards/local-auth.guard';
 import { Request } from 'express';
 import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { CacheType } from 'src/cache/cache.enum';
+import { Cache } from 'src/cache/cache.decorator';
 
+@Cache(CacheType.SHOULD_NOT_CACHE)
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}

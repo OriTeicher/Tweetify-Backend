@@ -41,4 +41,12 @@ export class CacheService implements OnModuleInit, OnModuleDestroy {
       console.log(error);
     }
   }
+
+  async del(key: string) {
+    try {
+      return await this.redisClient.del(key);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }

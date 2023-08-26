@@ -5,10 +5,12 @@ import { createClient } from 'redis';
 import { REDIS_CLIENT } from './constants';
 import { retryStrategy } from './redis-retry.strategy';
 import { CacheInterceptor } from './cache.interceptor';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 
 @Module({
   imports: [ConfigModule],
   providers: [
+    CacheInterceptor,
     CacheService,
     {
       provide: REDIS_CLIENT,
@@ -23,7 +25,10 @@ import { CacheInterceptor } from './cache.interceptor';
       },
       inject: [ConfigService],
     },
-    CacheInterceptor,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: CacheInterceptor,
+    },
   ],
   exports: [CacheService],
 })
