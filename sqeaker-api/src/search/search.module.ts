@@ -9,7 +9,7 @@ import SearchUserService from './services/search-user.service';
     ElasticsearchModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {
-        Logger.debug('[!] Initializing Elasticsearch...');
+        Logger.log('[!] Initializing Elasticsearch...');
         return {
           maxRetries: 10,
           node: configService.get('ELASTICSEARCH_NODE'),

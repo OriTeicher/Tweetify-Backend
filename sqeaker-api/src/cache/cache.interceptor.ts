@@ -6,11 +6,17 @@ import {
 } from '@nestjs/common';
 import { tap, of } from 'rxjs';
 import { CacheService } from './cache.service';
-import { Request } from 'express';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { Reflector } from '@nestjs/core';
 import { CacheType } from './cache.enum';
 import { CACHE_TYPE_KEY } from './cache.decorator';
+import { Response } from 'express';
+import { HttpVerb } from './constants';
+
+interface IRequest {
+  originalUrl: string;
+  method: HttpVerb;
+}
 
 @Injectable()
 export class CacheInterceptor implements NestInterceptor {
@@ -29,9 +35,11 @@ export class CacheInterceptor implements NestInterceptor {
       return next.handle();
     }
 
-    const request = context.switchToHttp().getRequest<Request>();
+    const response = context.switchToHttp().getResponse<Response>();
+    const request = context.switchToHttp().getRequest<IRequest>();
     const { originalUrl, method } = request;
 
+    response.setHeader('Content-Type', 'application/json');
     const user = request['user'] as UserEntity;
     const cacheKey = `${user.id}:${originalUrl}`;
 

@@ -14,6 +14,6 @@ export class PerformanceInterceptor implements NestInterceptor {
     const start = Date.now();
     return next
       .handle()
-      .pipe(tap(() => Logger.warn(`Response took: ${Date.now() - start}ms`)));
+      .pipe(tap(() => Logger.debug(`Response took: ${Date.now() - start}ms`)));
   }
 }

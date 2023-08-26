@@ -15,7 +15,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
     {
       provide: REDIS_CLIENT,
       useFactory: async (configService: ConfigService) => {
-        Logger.debug('[!] Initializing redis...');
+        Logger.log('[!] Initializing redis...');
         return createClient({
           socket: {
             reconnectStrategy: retryStrategy,

@@ -24,7 +24,7 @@ function getConfigObject(configService: ConfigService) {
     {
       provide: Firestore,
       useFactory: async (configService: ConfigService) => {
-        Logger.debug('[!] Initialzing firestore...');
+        Logger.log('[!] Initialzing firestore...');
         const app = initializeApp(getConfigObject(configService));
         return getFirestore(app);
       },

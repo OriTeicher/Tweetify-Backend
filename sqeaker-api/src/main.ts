@@ -7,12 +7,14 @@ import { PerformanceInterceptor } from './common/interceptors/performnace.interc
 import { SerializeInterceptor } from './common/serialize/serialize.interceptor';
 import { UserEntity } from './users/entities/user.entity';
 import * as cookieParser from 'cookie-parser';
+import * as compression from 'compression';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 
   app.use(cookieParser());
+  app.use(compression());
   app.enableShutdownHooks();
   app.setGlobalPrefix(GLOBAL_PREFIX);
   app.enableCors({
