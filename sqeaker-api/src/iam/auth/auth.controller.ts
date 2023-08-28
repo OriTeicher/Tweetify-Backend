@@ -34,18 +34,22 @@ export class AuthController {
     return this.authService.signup(createUserDto);
   }
 
+  @HttpCode(HttpStatus.OK)
   @Post('sign-out')
   signOut(@Req() request: Request) {
     return this.authService.signout(request);
   }
 
   @UseGuards(JwtRefreshGuard)
+  @HttpCode(HttpStatus.OK)
   @Post('refresh')
   refresh(@Req() request: Request) {
     return this.authService.refresh(request);
   }
 
   @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @Cache(CacheType.SHOULD_CACHE)
   @Post('/ping')
   ping(@Req() request: Request) {
     return this.authService.ping(request);

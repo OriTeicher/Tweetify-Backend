@@ -3,6 +3,7 @@ import { ElasticsearchModule } from '@nestjs/elasticsearch';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import SearchServiceBase from './services/search-base.service';
 import SearchUserService from './services/search-user.service';
+import { readFileSync } from 'fs';
 
 @Module({
   imports: [
@@ -14,8 +15,11 @@ import SearchUserService from './services/search-user.service';
           maxRetries: 10,
           node: configService.get('ELASTICSEARCH_NODE'),
           auth: {
-            username: configService.get('ELASTICSEARCH_USERNAME'),
-            password: configService.get('ELASTICSEARCH_PASSWORD'),
+            apiKey: configService.get<string>('ES_API_KEY'),
+          },
+          ssl: {
+            ca: readFileSync('./http_ca.crt'),
+            rejectUnauthorized: false,
           },
         };
       },

@@ -9,7 +9,6 @@ import * as Joi from 'joi';
 import { SearchModule } from './search/search.module';
 import { LoggerModule } from './logger/logger.module';
 import { CacheModule } from './cache/cache.module';
-import { ConentDistributionModule } from './conent-distribution/conent-distribution.module';
 
 @Module({
   imports: [
@@ -29,6 +28,7 @@ import { ConentDistributionModule } from './conent-distribution/conent-distribut
         JWT_TOKEN_ISSUER: Joi.string().required(),
         JWT_ACCESS_TOKEN_TTL: Joi.number().required(),
         JWT_REFRESH_JWT_TTL: Joi.number().required(),
+        ES_API_KEY: Joi.string().required(),
         SECRET_KEY: Joi.string().required(),
         CORS_ORIGIN: Joi.string().required(),
         PORT: Joi.number().optional().default(3000),
@@ -42,7 +42,6 @@ import { ConentDistributionModule } from './conent-distribution/conent-distribut
     CommentsModule,
     IamModule,
     CacheModule,
-    ConentDistributionModule,
   ],
   controllers: [],
   providers: [],

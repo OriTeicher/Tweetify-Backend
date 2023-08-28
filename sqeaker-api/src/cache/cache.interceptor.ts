@@ -38,18 +38,20 @@ export class CacheInterceptor implements NestInterceptor {
     const response = context.switchToHttp().getResponse<Response>();
     const request = context.switchToHttp().getRequest<IRequest>();
     const { originalUrl, method } = request;
-
-    response.setHeader('Content-Type', 'application/json');
     const user = request['user'] as UserEntity;
     const cacheKey = `${user.id}:${originalUrl}`;
+
+    response.setHeader('Content-Type', 'application/json');
 
     if (method === 'DELETE') {
       this.cacheService.del(cacheKey);
       return next.handle();
     }
 
-    const cachedData = await this.cacheService.get(cacheKey);
-    if (cachedData) return of(JSON.parse(cachedData));
+    if (method === 'GET') {
+      const cachedData = await this.cacheService.get(cacheKey);
+      if (cachedData) return of(JSON.parse(cachedData));
+    }
 
     return next.handle().pipe(
       tap(async (data) => {
@@ -63,7 +65,7 @@ export class CacheInterceptor implements NestInterceptor {
       CACHE_TYPE_KEY,
       [context.getHandler(), context.getClass()],
     ) ?? [CacheType.SHOULD_CACHE];
-    const handlers = cacheTypes.map((type) => this.shouldCacheMap[type]).flat();
+    const handlers = cacheTypes.map((type) => this.shouldCacheMap[type]);
 
     for (const instance of handlers) {
       const shouldCache = await Promise.resolve(instance());

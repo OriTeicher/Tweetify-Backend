@@ -13,8 +13,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 
+  app.use(compression({ encodings: ['gzip', 'deflate'] }));
   app.use(cookieParser());
-  app.use(compression());
   app.enableShutdownHooks();
   app.setGlobalPrefix(GLOBAL_PREFIX);
   app.enableCors({
