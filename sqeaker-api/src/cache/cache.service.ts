@@ -24,11 +24,7 @@ export class CacheService implements OnModuleInit, OnModuleDestroy {
 
   async set(key: string, value: string) {
     try {
-      return await this.redisClient.setEx(
-        key,
-        REDIS_TTL,
-        JSON.stringify(value),
-      );
+      return await this.redisClient.setEx(key, REDIS_TTL, value);
     } catch (error) {
       console.log(error);
     }

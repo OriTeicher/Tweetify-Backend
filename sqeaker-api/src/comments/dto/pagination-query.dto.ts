@@ -1,11 +1,11 @@
-import { IsOptional, IsPositive } from 'class-validator';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class PaginationQueryDto {
+  @IsNumber()
   @IsOptional()
-  @IsPositive()
   readonly limit: number;
 
+  @IsString()
   @IsOptional()
-  @IsPositive()
-  readonly offset: number;
+  readonly startAt: string;
 }

@@ -8,6 +8,8 @@ import {
   Delete,
   UseInterceptors,
   Query,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -15,15 +17,21 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { SerializeInterceptor } from 'src/common/serialize/serialize.interceptor';
 import { PostEntity } from './entities/post.entity';
 import { PaginationQueryDto } from 'src/comments/dto/pagination-query.dto';
+import { JwtAuthGuard } from 'src/iam/auth/guards/jwt-auth.guard';
+import { CacheType } from 'src/cache/cache.enum';
+import { Cache } from 'src/cache/cache.decorator';
+import { Request } from 'express';
 
+@UseGuards(JwtAuthGuard)
 @UseInterceptors(new SerializeInterceptor(PostEntity))
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
+  @Cache(CacheType.SHOULD_NOT_CACHE)
   @Post()
-  create(@Body() createPostDto: CreatePostDto) {
-    return this.postsService.create(createPostDto);
+  create(@Req() request: Request, @Body() createPostDto: CreatePostDto) {
+    return this.postsService.create(request, createPostDto);
   }
 
   @Get()

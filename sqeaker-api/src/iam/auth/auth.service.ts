@@ -10,8 +10,6 @@ import jwtConfig from '../config/jwt.config';
 import { ConfigType } from '@nestjs/config';
 import { REQUEST_USER_KEY } from '../constants';
 
-// TODO: Add SameSite to cookies.
-
 @Injectable()
 export class AuthService {
   constructor(

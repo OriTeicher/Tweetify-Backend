@@ -71,13 +71,20 @@ export class BaseRepository<E extends EntityBase> {
     let docs;
 
     if (Object.entries(paginationQueryDto).length !== 0) {
+      console.log(paginationQueryDto);
       docs = await getDocs(
-        query(
-          collection(this.db, collectionPath),
-          limit(paginationQueryDto?.limit),
-          orderBy(ORDER_BY),
-          startAt(paginationQueryDto?.offset),
-        ),
+        paginationQueryDto?.startAt
+          ? query(
+              collection(this.db, collectionPath),
+              orderBy(ORDER_BY, 'desc'),
+              limit(paginationQueryDto?.limit || 10),
+              startAt(paginationQueryDto.startAt),
+            )
+          : query(
+              collection(this.db, collectionPath),
+              orderBy(ORDER_BY, 'desc'),
+              limit(paginationQueryDto?.limit || 10),
+            ),
       );
     } else {
       docs = await getDocs(query(collection(this.db, collectionPath)));

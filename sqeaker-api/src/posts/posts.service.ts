@@ -5,6 +5,9 @@ import { PostRepsitory } from 'src/database/repositories/posts.repository';
 import { UserRepositry } from 'src/database/repositories/user.repository';
 import { PostEntity } from './entities/post.entity';
 import { PaginationQueryDto } from 'src/comments/dto/pagination-query.dto';
+import { REQUEST_USER_KEY } from 'src/iam/constants';
+import { Request } from 'express';
+import { UserEntity } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class PostsService {
@@ -13,13 +16,13 @@ export class PostsService {
     private readonly usersRepository: UserRepositry,
   ) {}
 
-  private async createEmptyPost(
+  private createEmptyPost(
+    request: Request,
     createPostDto: CreatePostDto,
-  ): Promise<PostEntity> {
-    const user = await this.usersRepository.findOne(createPostDto.userId);
+  ): PostEntity {
     return {
       id: null,
-      owner: user,
+      owner: request[REQUEST_USER_KEY] as UserEntity,
       imgUrl: createPostDto?.imgUrl || null,
       createdAt: null,
       likes: 0,
@@ -29,13 +32,17 @@ export class PostsService {
     };
   }
 
-  async create(createPostDto: CreatePostDto) {
-    const post = await this.createEmptyPost(createPostDto);
-    const savedPost = await this.postRepository.create(post);
-
-    const user = await this.usersRepository.findOne(savedPost.owner.id);
+  private async updateUser(user: UserEntity, savedPost: PostEntity) {
     user.postsId.push(savedPost.id);
     await this.usersRepository.update(user.id, user);
+  }
+
+  async create(request: Request, createPostDto: CreatePostDto) {
+    const post = this.createEmptyPost(request, createPostDto);
+    const savedPost = await this.postRepository.create(post);
+
+    const user = request[REQUEST_USER_KEY] as UserEntity;
+    this.updateUser(user, savedPost);
 
     return savedPost;
   }
