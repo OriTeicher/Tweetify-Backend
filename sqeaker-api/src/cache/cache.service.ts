@@ -40,7 +40,16 @@ export class CacheService implements OnModuleInit, OnModuleDestroy {
 
   async del(key: string) {
     try {
-      return await this.redisClient.del(key);
+      const [userPattern, _] = key.split(':');
+      let cursor = 0;
+      const scanResult = await this.redisClient.scan(cursor, {
+        MATCH: userPattern + '*',
+      });
+
+      for (key of scanResult.keys) {
+        cursor = scanResult.cursor;
+        await this.redisClient.del(key);
+      }
     } catch (error) {
       console.log(error);
     }

@@ -71,7 +71,6 @@ export class BaseRepository<E extends EntityBase> {
     let docs;
 
     if (Object.entries(paginationQueryDto).length !== 0) {
-      console.log(paginationQueryDto);
       docs = await getDocs(
         paginationQueryDto?.startAt
           ? query(

@@ -10,12 +10,7 @@ import { UserEntity } from 'src/users/entities/user.entity';
 import { Reflector } from '@nestjs/core';
 import { CacheType } from './cache.enum';
 import { CACHE_TYPE_KEY } from './cache.decorator';
-import { Response } from 'express';
-import { HttpVerb } from './constants';
-interface IRequest {
-  originalUrl: string;
-  method: HttpVerb;
-}
+import { Response, Request } from 'express';
 
 @Injectable()
 export class CacheInterceptor implements NestInterceptor {
@@ -35,7 +30,7 @@ export class CacheInterceptor implements NestInterceptor {
     }
 
     const response = context.switchToHttp().getResponse<Response>();
-    const request = context.switchToHttp().getRequest<IRequest>();
+    const request = context.switchToHttp().getRequest<Request>();
     const { originalUrl, method } = request;
     const user = request['user'] as UserEntity;
     const cacheKey = `${user.id}:${originalUrl}`;
@@ -52,11 +47,14 @@ export class CacheInterceptor implements NestInterceptor {
       if (cachedData) return of(JSON.parse(cachedData));
     }
 
-    return next
-      .handle()
-      .pipe(
-        tap((data) => this.cacheService.set(cacheKey, JSON.stringify(data))),
-      );
+    return next.handle().pipe(
+      tap((data) => {
+        // TODO: Improve cache invalidation later...
+        this.cacheService.del(cacheKey);
+        this.cacheService.set(cacheKey, JSON.stringify(data));
+        return data;
+      }),
+    );
   }
 
   private async shouldCache(context: ExecutionContext): Promise<boolean> {
