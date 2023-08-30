@@ -14,6 +14,8 @@ export class PostEntity {
   @Type(() => UserEntity)
   readonly owner: UserEntity;
 
+  readonly likedId: string[];
+
   readonly imgUrl?: string;
 
   @SetCreatedAt()

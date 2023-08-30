@@ -29,6 +29,7 @@ export class PostsService {
       resqueaks: 0,
       content: createPostDto?.content || null,
       comments: [],
+      likedId: [],
     };
   }
 
@@ -57,7 +58,15 @@ export class PostsService {
 
   async update(id: string, updatePostDto: UpdatePostDto) {
     const post = await this.findOne(id);
+
+    if (post.likes < updatePostDto.likes) {
+      post.likedId.push(updatePostDto.userId);
+    } else {
+      const index = post.likedId.findIndex((id) => id === updatePostDto.userId);
+      post.likedId.splice(index, 1);
+    }
     Object.assign(post, updatePostDto);
+
     return await this.postRepository.update(id, post);
   }
 
