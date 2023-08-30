@@ -8,6 +8,7 @@ import {
   limit,
   orderBy,
   query,
+  runTransaction,
   setDoc,
   startAt,
   updateDoc,
@@ -168,5 +169,40 @@ export class BaseRepository<E extends EntityBase> {
       console.log(error);
       throw new InternalServerErrorException();
     }
+  }
+
+  protected async transaction(
+    entityId: string,
+    transactionCb: (entity: unknown) => unknown,
+  );
+  protected async transaction(
+    entityId: string,
+    transactionCb: (entity: unknown) => unknown,
+    collectionPath?: string,
+  );
+
+  protected async transaction(
+    entityId: string,
+    transactionCb: (entity: unknown) => unknown,
+    collectionPath?: string,
+  ) {
+    const docRef = doc(this.db, collectionPath, entityId);
+    return runTransaction(this.db, async (transaction) => {
+      try {
+        const doc = await transaction.get(docRef);
+        if (!doc.exists())
+          throw new NotFoundException(
+            `Cannot find document with id=${entityId}`,
+          );
+
+        const entity = plainToInstance(this.entityCtor, doc.data());
+        const cbResult = transactionCb(entity);
+
+        transaction.update(docRef, instanceToPlain(cbResult));
+        return cbResult;
+      } catch (error) {
+        console.log(error);
+      }
+    });
   }
 }

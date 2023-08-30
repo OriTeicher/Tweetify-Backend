@@ -48,10 +48,10 @@ export class CacheInterceptor implements NestInterceptor {
     }
 
     return next.handle().pipe(
-      tap((data) => {
+      tap(async (data) => {
         // TODO: Improve cache invalidation later...
-        this.cacheService.del(cacheKey);
-        this.cacheService.set(cacheKey, JSON.stringify(data));
+        await this.cacheService.del(cacheKey);
+        await this.cacheService.set(cacheKey, JSON.stringify(data));
         return data;
       }),
     );

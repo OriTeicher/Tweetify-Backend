@@ -30,4 +30,11 @@ export class PostRepsitory extends BaseRepository<PostEntity> {
   async remove(id: string) {
     await super.remove(id, POSTS_COLLECTION);
   }
+
+  async transaction(
+    entityId: string,
+    transactionCb: (entity: unknown) => unknown,
+  ) {
+    return await super.transaction(entityId, transactionCb, POSTS_COLLECTION);
+  }
 }

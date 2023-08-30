@@ -58,19 +58,30 @@ export class PostsService {
 
   async update(id: string, updatePostDto: UpdatePostDto) {
     const post = await this.findOne(id);
-
-    if (post.likes < updatePostDto.likes) {
-      post.likedId.push(updatePostDto.userId);
-    } else {
-      const index = post.likedId.findIndex((id) => id === updatePostDto.userId);
-      post.likedId.splice(index, 1);
-    }
     Object.assign(post, updatePostDto);
-
     return await this.postRepository.update(id, post);
   }
 
   async remove(id: string) {
     await this.postRepository.remove(id);
+  }
+
+  async likePost(request: Request, postid: string) {
+    const user = request[REQUEST_USER_KEY] as UserEntity;
+
+    return await this.postRepository.transaction(postid, (post: PostEntity) => {
+      post.likedId.push(user.id);
+      return Object.assign(post, { likes: post.likes + 1 });
+    });
+  }
+
+  async dislikePost(request: Request, postid: string) {
+    const user = request[REQUEST_USER_KEY] as UserEntity;
+
+    return await this.postRepository.transaction(postid, (post: PostEntity) => {
+      const index = post.likedId.indexOf(user.id);
+      post.likedId.splice(index, 1);
+      return Object.assign(post, { likes: Math.max(0, post.likes - 1) });
+    });
   }
 }
