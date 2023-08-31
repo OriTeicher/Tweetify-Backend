@@ -77,13 +77,13 @@ export class BaseRepository<E extends EntityBase> {
           ? query(
               collection(this.db, collectionPath),
               orderBy(ORDER_BY, 'desc'),
-              limit(paginationQueryDto?.limit || 10),
+              limit(paginationQueryDto?.limit || 25),
               startAt(paginationQueryDto.startAt),
             )
           : query(
               collection(this.db, collectionPath),
               orderBy(ORDER_BY, 'desc'),
-              limit(paginationQueryDto?.limit || 10),
+              limit(paginationQueryDto?.limit || 25),
             ),
       );
     } else {
