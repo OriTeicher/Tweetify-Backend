@@ -34,13 +34,11 @@ export class PostsController {
     return this.postsService.create(request, createPostDto);
   }
 
-  @Cache(CacheType.SHOULD_NOT_CACHE)
   @Post(':id/like')
   like(@Req() request: Request, @Param('id') id: string) {
     return this.postsService.likePost(request, id);
   }
 
-  @Cache(CacheType.SHOULD_NOT_CACHE)
   @Post(':id/dislike')
   dislike(@Req() request: Request, @Param('id') id: string) {
     return this.postsService.dislikePost(request, id);

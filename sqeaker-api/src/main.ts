@@ -8,8 +8,10 @@ import { SerializeInterceptor } from './common/serialize/serialize.interceptor';
 import { UserEntity } from './users/entities/user.entity';
 import * as cookieParser from 'cookie-parser';
 import * as compression from 'compression';
+import tracer from './telemetry/tracer';
 
 async function bootstrap() {
+  await tracer.start();
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 

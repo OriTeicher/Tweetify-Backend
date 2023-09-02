@@ -14,6 +14,8 @@ function getConfigObject(configService: ConfigService) {
     messagingSenderId: configService.get('FIREBASE_MESSAGING_SENDER_ID'),
     appId: configService.get('FIREBASE_APP_ID'),
     measurementId: configService.get('FIREBASE_MEASURMENT_ID'),
+    databaseURL:
+      'https://squeaker-api-default-rtdb.europe-west1.firebasedatabase.app/',
   };
 
   return firebaseConfig;

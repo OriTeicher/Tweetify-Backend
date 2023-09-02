@@ -70,10 +70,7 @@ export class PostsService {
     const user = request[REQUEST_USER_KEY] as UserEntity;
 
     return await this.postRepository.transaction(postid, (post: PostEntity) => {
-      if (post.likedId.includes(user.id)) {
-        throw new Error('User already liked the post');
-      }
-
+      if (post.likedId.indexOf(user.id) !== -1) return post;
       post.likedId.push(user.id);
       return Object.assign(post, { likes: post.likes + 1 });
     });
@@ -81,15 +78,16 @@ export class PostsService {
 
   async dislikePost(request: Request, postid: string) {
     const user = request[REQUEST_USER_KEY] as UserEntity;
+    const transactionRes = await this.postRepository.transaction(
+      postid,
+      (post: PostEntity) => {
+        const index = post.likedId.indexOf(user.id);
+        if (index === -1) return post;
 
-    return await this.postRepository.transaction(postid, (post: PostEntity) => {
-      if (!post.likedId.includes(user.id)) {
-        throw new Error('User did not like the post in the first place');
-      }
-
-      const index = post.likedId.indexOf(user.id);
-      post.likedId.splice(index, 1);
-      return Object.assign(post, { likes: Math.max(0, post.likes - 1) });
-    });
+        post.likedId.splice(index, 1);
+        return Object.assign(post, { likes: Math.max(0, post.likes - 1) });
+      },
+    );
+    return transactionRes;
   }
 }

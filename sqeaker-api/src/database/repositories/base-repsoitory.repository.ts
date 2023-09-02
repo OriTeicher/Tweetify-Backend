@@ -190,15 +190,8 @@ export class BaseRepository<E extends EntityBase> {
     return runTransaction(this.db, async (transaction) => {
       try {
         const doc = await transaction.get(docRef);
-        if (!doc.exists())
-          throw new NotFoundException(
-            `Cannot find document with id=${entityId}`,
-          );
-
-        const entity = plainToInstance(this.entityCtor, doc.data());
-        const cbResult = transactionCb(entity);
-
-        transaction.update(docRef, instanceToPlain(cbResult));
+        const cbResult = transactionCb(doc.data());
+        transaction.update(docRef, cbResult);
         return cbResult;
       } catch (error) {
         console.log(error);
